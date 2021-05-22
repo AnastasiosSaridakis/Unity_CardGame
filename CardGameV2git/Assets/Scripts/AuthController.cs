@@ -27,6 +27,10 @@ public class AuthController : MonoBehaviour
 
     private void Start()
     {
+        #if UNITY_EDITOR
+                FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
+        #endif
+        
       //  databaseReference = FirebaseDatabase.GetInstance(DATA_URL).RootReference;
       databaseReference = FirebaseDatabase.DefaultInstance.RootReference; 
         if (databaseReference == null)
@@ -39,9 +43,7 @@ public class AuthController : MonoBehaviour
             Debug.Log("database reference: "+databaseReference.ToString());
             errorTextLoggin = databaseReference.ToString();
         }
-        #if UNITY_EDITOR
-                FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
-        #endif
+        
         for (int i = 0; i< 30; i++)
         {
             deck.Add(i % 3);
