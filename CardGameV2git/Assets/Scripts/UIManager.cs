@@ -30,6 +30,8 @@ public class UIManager : MonoBehaviour
     public GameObject ReadToPlayList;
     public GameObject PlayButton;
 
+    
+    
 
     void Awake()
     {
