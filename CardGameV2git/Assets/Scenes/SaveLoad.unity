@@ -16232,27 +16232,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1308741396539556044, guid: c54e9e1663c2b5c44b73535205f77c1e,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1308741396539556045, guid: c54e9e1663c2b5c44b73535205f77c1e,
-        type: 3}
-      propertyPath: offlineScene
-      value: Assets/Scenes/SaveLoad.unity
-      objectReference: {fileID: 0}
-    - target: {fileID: 1308741396539556045, guid: c54e9e1663c2b5c44b73535205f77c1e,
-        type: 3}
-      propertyPath: onlineScene
-      value: Assets/Scenes/Lobby.unity
-      objectReference: {fileID: 0}
-    - target: {fileID: 1308741396539556045, guid: c54e9e1663c2b5c44b73535205f77c1e,
-        type: 3}
-      propertyPath: playerPrefab
-      value: 
-      objectReference: {fileID: 179171248967312041, guid: ee2b8d34d16b1f94f9b60c737fbe90b0,
-        type: 3}
     - target: {fileID: 1308741396539556046, guid: c54e9e1663c2b5c44b73535205f77c1e,
         type: 3}
       propertyPath: m_Name

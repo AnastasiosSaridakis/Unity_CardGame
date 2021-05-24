@@ -78,15 +78,15 @@ MonoBehaviour:
   serverTickRate: 30
   serverBatching: 1
   serverBatchInterval: 0
-  offlineScene: 
-  onlineScene: 
+  offlineScene: Assets/Scenes/SaveLoad.unity
+  onlineScene: Assets/Scenes/Lobby.unity
   transport: {fileID: 1308741396539556034}
   networkAddress: localhost
   maxConnections: 4
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 2936158387209779567, guid: 9faa556f7e54e10409937499f44f2c66,
+  playerPrefab: {fileID: 179171248967312041, guid: ee2b8d34d16b1f94f9b60c737fbe90b0,
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
@@ -100,7 +100,6 @@ MonoBehaviour:
   - {fileID: 8929699075365778480, guid: 17a934aedd7b4ed4dbf5ec4eff7d3e2e, type: 3}
   - {fileID: 4723404321864069308, guid: 07149cdad84c2054abeaa87893308991, type: 3}
   - {fileID: 772503070124758969, guid: d86dd46d39b59854f8bb2cdad9968829, type: 3}
-  - {fileID: 0}
   - {fileID: 8387777690022020235, guid: 499c1bcfcaee51f479c5d656189f4abe, type: 3}
   - {fileID: 5998690727173856858, guid: baa440df213e8c348af4d4d4ebb13ef6, type: 3}
   - {fileID: 6084879592885598590, guid: 7000e17c73507a1468c5a763c3481c61, type: 3}
@@ -112,7 +111,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1308741396539556046}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
   m_Name: 

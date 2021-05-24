@@ -17,6 +17,18 @@ public class UILobby : MonoBehaviour
     private Button joinButton;
     [SerializeField]
     private Button hostButton;
+    [SerializeField] 
+    private GameObject playersPanel;
+
+    [Header("Lobby")] 
+    [SerializeField] 
+    private Transform UIPlayerParent;
+    [SerializeField] 
+    private GameObject UIPlayerPrefab;
+    [SerializeField] 
+    private TMP_Text matchIDText;
+    [SerializeField]
+    private Button beginGameButton;
     
     void Awake()
     {
@@ -43,13 +55,21 @@ public class UILobby : MonoBehaviour
         joinMatchInput.interactable = false;
         joinButton.interactable = false;
         hostButton.interactable = false;
+        
+        PlayerConnection.localPlayer.JoinGame(joinMatchInput.text.ToUpper());
     }
 
-    public void HostSuccess(bool success)
+    public void HostSuccess(bool success,string matchID)
     {
         if (success)
         {
-            Debug.Log("setting canvas to true here");
+            //Debug.Log("setting canvas to true here");
+            playersPanel.SetActive(true);
+            
+            SpawnPlayerUIPrefab(PlayerConnection.localPlayer);
+            matchIDText.text = matchID;
+            beginGameButton.interactable = true;
+            Debug.Log("spawning UI pref (HOSTSuccess)");
         }
         else
         {
@@ -59,10 +79,16 @@ public class UILobby : MonoBehaviour
         }
     }
 
-    public void JoinSuccess(bool success)
+    public void JoinSuccess(bool success, string matchID)
     {
         if (success)
         {
+           // Debug.Log("you joined a game!");
+            playersPanel.SetActive(true);
+            
+            SpawnPlayerUIPrefab(PlayerConnection.localPlayer);
+            matchIDText.text = matchID;
+            Debug.Log("spawning UI pref (JOINSuccess)");
         }
         else
         {
@@ -70,7 +96,18 @@ public class UILobby : MonoBehaviour
             joinButton.interactable = true;
             hostButton.interactable = true;
         }
-    } 
+    }
+
+    public void SpawnPlayerUIPrefab(PlayerConnection player)
+    {
+        GameObject newUIPlayer = Instantiate(UIPlayerPrefab, UIPlayerParent);
+        newUIPlayer.GetComponent<UIPlayer>().SetPlayer(player);
+    }
+
+    public void BeginGame()
+    {
+        PlayerConnection.localPlayer.BeginGame();
+    }
     
     
 }
