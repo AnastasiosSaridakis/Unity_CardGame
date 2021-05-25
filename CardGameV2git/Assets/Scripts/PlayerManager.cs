@@ -510,20 +510,21 @@ public class PlayerManager : NetworkBehaviour
         matchID = _matchID;
         if(MatchMaker.instance.HostGame(_matchID, gameObject, out playerIndex))
         {
-            Debug.Log("<color = green>Game hosted successfully</color>");
+            Debug.Log("<color=green>Game hosted successfully</color>");
             networkMatchChecker.matchId = _matchID.ToGuid();
-            TargetHostGame(true,_matchID);
+            TargetHostGame(true,_matchID, playerIndex);
         }
         else
         {
-            Debug.Log("<color = red>Game hosted failed</color>");
-            TargetHostGame(false,_matchID);
+            Debug.Log("<color=red>Game hosted failed</color>");
+            TargetHostGame(false,_matchID, playerIndex);
         }
     }
 
     [TargetRpc]
-    void TargetHostGame(bool success,string _matchID)
+    void TargetHostGame(bool success,string _matchID, int _playerIndex)
     {
+        this.playerIndex = _playerIndex;
         matchID = _matchID;
         Debug.Log($"MatchID: {matchID} == {_matchID}");
         UILobby.Instance.HostSuccess(success, _matchID);
@@ -543,20 +544,21 @@ public class PlayerManager : NetworkBehaviour
         matchID = _matchID;
         if(MatchMaker.instance.JoinGame(_matchID, gameObject, out playerIndex))
         {
-            Debug.Log("<color = green>Game hosted successfully</color>");
+            Debug.Log("<color=green>Game hosted successfully</color>");
             networkMatchChecker.matchId = _matchID.ToGuid();
-            TargetJoinGame(true,_matchID);
+            TargetJoinGame(true,_matchID, playerIndex);
         }
         else
         {
-            Debug.Log("<color = red>Game hosted failed</color>");
-            TargetJoinGame(false,_matchID);
+            Debug.Log("<color=red>Game hosted failed</color>");
+            TargetJoinGame(false,_matchID, playerIndex);
         }
     }
 
     [TargetRpc]
-    void TargetJoinGame(bool success,string _matchID)
+    void TargetJoinGame(bool success,string _matchID,int _playerIndex)
     {
+        this.playerIndex = _playerIndex;
         matchID = _matchID;
         Debug.Log($"MatchID: {matchID} == {_matchID}");
         UILobby.Instance.JoinSuccess(success,_matchID);
@@ -574,7 +576,7 @@ public class PlayerManager : NetworkBehaviour
     void CmdBeginGame()
     {
         MatchMaker.instance.BeginGame(matchID);
-        Debug.Log("<color = red>Game Beginning failed</color>");
+        Debug.Log("<color=red>Game Beginning failed</color>");
     }
 
     public void StartGame()

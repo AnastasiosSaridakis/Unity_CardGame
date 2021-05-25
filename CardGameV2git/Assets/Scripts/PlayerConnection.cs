@@ -5,7 +5,8 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlayerConnection : NetworkBehaviour
+namespace tutorialOLD
+{public class PlayerConnection : NetworkBehaviour
 {
     public static PlayerConnection localPlayer;
     [SyncVar] public string matchID;
@@ -123,3 +124,6 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 }
+    
+}
+

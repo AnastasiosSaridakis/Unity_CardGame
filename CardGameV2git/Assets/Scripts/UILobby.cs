@@ -101,7 +101,8 @@ public class UILobby : MonoBehaviour
     public void SpawnPlayerUIPrefab(PlayerManager player)
     {
         GameObject newUIPlayer = Instantiate(UIPlayerPrefab, UIPlayerParent);
-        //newUIPlayer.GetComponent<UIPlayer>().SetPlayer(player);
+        newUIPlayer.GetComponent<UIPlayer>().SetPlayer(player);
+        //newUIPlayer.transform.SetSiblingIndex(player.playerIndex-1);  //Uncomment it if you want all clients to be syncronized in the lobby panel and show in the same order.
     }
 
     public void BeginGame()
