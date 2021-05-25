@@ -96,7 +96,7 @@ public class MatchMaker : NetworkBehaviour
             {
                 foreach (var player in matches[i].players)
                 {
-                    PlayerConnection _player = player.GetComponent<PlayerConnection>();
+                    PlayerManager _player = player.GetComponent<PlayerManager>();
                     turnManager.AddPlayer(_player);
                     _player.StartGame();
                 }

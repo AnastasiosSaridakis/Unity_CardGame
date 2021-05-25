@@ -22,7 +22,7 @@ public class PlayerConnection : NetworkBehaviour
         }
         else
         {
-            UILobby.Instance.SpawnPlayerUIPrefab(this);
+            //UILobby.Instance.SpawnPlayerUIPrefab(this);
             Debug.Log(("NOT LOCAL PLAYER"));
         }
     }

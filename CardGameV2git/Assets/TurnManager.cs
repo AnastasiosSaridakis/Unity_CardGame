@@ -5,8 +5,8 @@ using Mirror;
 
 public class TurnManager : NetworkBehaviour
 {
-    private List<PlayerConnection> players = new List<PlayerConnection>();
-    public void AddPlayer(PlayerConnection _player)
+    private List<PlayerManager> players = new List<PlayerManager>();
+    public void AddPlayer(PlayerManager _player)
     {
         players.Add(_player);
     }

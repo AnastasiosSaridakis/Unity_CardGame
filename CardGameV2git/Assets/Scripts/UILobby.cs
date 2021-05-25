@@ -48,7 +48,7 @@ public class UILobby : MonoBehaviour
         joinButton.interactable = false;
         hostButton.interactable = false;
         
-        PlayerConnection.localPlayer.HostGame();
+        PlayerManager.localPlayer.HostGame();
     }
     public void Join()
     {
@@ -56,7 +56,7 @@ public class UILobby : MonoBehaviour
         joinButton.interactable = false;
         hostButton.interactable = false;
         
-        PlayerConnection.localPlayer.JoinGame(joinMatchInput.text.ToUpper());
+        PlayerManager.localPlayer.JoinGame(joinMatchInput.text.ToUpper());
     }
 
     public void HostSuccess(bool success,string matchID)
@@ -66,7 +66,7 @@ public class UILobby : MonoBehaviour
             //Debug.Log("setting canvas to true here");
             playersPanel.SetActive(true);
             
-            SpawnPlayerUIPrefab(PlayerConnection.localPlayer);
+            SpawnPlayerUIPrefab(PlayerManager.localPlayer);
             matchIDText.text = matchID;
             beginGameButton.interactable = true;
             Debug.Log("spawning UI pref (HOSTSuccess)");
@@ -86,7 +86,7 @@ public class UILobby : MonoBehaviour
            // Debug.Log("you joined a game!");
             playersPanel.SetActive(true);
             
-            SpawnPlayerUIPrefab(PlayerConnection.localPlayer);
+            SpawnPlayerUIPrefab(PlayerManager.localPlayer);
             matchIDText.text = matchID;
             Debug.Log("spawning UI pref (JOINSuccess)");
         }
@@ -98,15 +98,15 @@ public class UILobby : MonoBehaviour
         }
     }
 
-    public void SpawnPlayerUIPrefab(PlayerConnection player)
+    public void SpawnPlayerUIPrefab(PlayerManager player)
     {
         GameObject newUIPlayer = Instantiate(UIPlayerPrefab, UIPlayerParent);
-        newUIPlayer.GetComponent<UIPlayer>().SetPlayer(player);
+        //newUIPlayer.GetComponent<UIPlayer>().SetPlayer(player);
     }
 
     public void BeginGame()
     {
-        PlayerConnection.localPlayer.BeginGame();
+        PlayerManager.localPlayer.BeginGame();
     }
     
     

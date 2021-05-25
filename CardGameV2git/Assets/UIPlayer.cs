@@ -8,9 +8,9 @@ public class UIPlayer : MonoBehaviour
 {
    [SerializeField] private TMP_Text text;
 
-   private PlayerConnection player;
+   private PlayerManager player;
 
-   public void SetPlayer(PlayerConnection player)
+   public void SetPlayer(PlayerManager player)
    {
       this.player = player;
       text.text = "Player" + player.playerIndex.ToString();
