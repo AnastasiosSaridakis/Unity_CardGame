@@ -13,12 +13,12 @@ public class UILobby : MonoBehaviour
     [Header("Host/Join Elements")] 
     [SerializeField]
     private TMP_InputField joinMatchInput;
-    [SerializeField]
-    private Button joinButton;
-    [SerializeField]
-    private Button hostButton;
+
+    [SerializeField] private List<Selectable> lobbySelectables = new List<Selectable>();
     [SerializeField] 
     private GameObject playersPanel;
+    [SerializeField] 
+    private GameObject searchCanvas;
 
     [Header("Lobby")] 
     [SerializeField] 
@@ -29,7 +29,10 @@ public class UILobby : MonoBehaviour
     private TMP_Text matchIDText;
     [SerializeField]
     private Button beginGameButton;
-    
+
+    private GameObject playerLobbyUI;
+
+    private bool searching = false;
     void Awake()
     {
         if (_instance != null && _instance != this)
@@ -42,19 +45,26 @@ public class UILobby : MonoBehaviour
         }
     }
     
-    public void Host()
+    public void HostPrivate()
     {
         joinMatchInput.interactable = false;
-        joinButton.interactable = false;
-        hostButton.interactable = false;
         
-        PlayerManager.localPlayer.HostGame();
+        lobbySelectables.ForEach(x => x.interactable = false);
+        
+        PlayerManager.localPlayer.HostGame(false);
+    }
+    public void HostPublic()
+    {
+        joinMatchInput.interactable = false;
+        
+        lobbySelectables.ForEach(x => x.interactable = false);
+        
+        PlayerManager.localPlayer.HostGame(true);
     }
     public void Join()
     {
         joinMatchInput.interactable = false;
-        joinButton.interactable = false;
-        hostButton.interactable = false;
+        lobbySelectables.ForEach(x => x.interactable = false);
         
         PlayerManager.localPlayer.JoinGame(joinMatchInput.text.ToUpper());
     }
@@ -66,16 +76,15 @@ public class UILobby : MonoBehaviour
             //Debug.Log("setting canvas to true here");
             playersPanel.SetActive(true);
             
-            SpawnPlayerUIPrefab(PlayerManager.localPlayer);
+            if(playerLobbyUI != null) Destroy(playerLobbyUI);
+            playerLobbyUI = SpawnPlayerUIPrefab(PlayerManager.localPlayer);
             matchIDText.text = matchID;
-            beginGameButton.interactable = true;
-            Debug.Log("spawning UI pref (HOSTSuccess)");
+            beginGameButton.gameObject.SetActive(true);
         }
         else
         {
             joinMatchInput.interactable = true;
-            joinButton.interactable = true;
-            hostButton.interactable = true;
+            lobbySelectables.ForEach(x => x.interactable = true);
         }
     }
 
@@ -86,29 +95,92 @@ public class UILobby : MonoBehaviour
            // Debug.Log("you joined a game!");
             playersPanel.SetActive(true);
             
-            SpawnPlayerUIPrefab(PlayerManager.localPlayer);
+            if(playerLobbyUI != null) Destroy(playerLobbyUI);
+            playerLobbyUI = SpawnPlayerUIPrefab(PlayerManager.localPlayer);
             matchIDText.text = matchID;
-            Debug.Log("spawning UI pref (JOINSuccess)");
         }
         else
         {
             joinMatchInput.interactable = true;
-            joinButton.interactable = true;
-            hostButton.interactable = true;
+            lobbySelectables.ForEach(x => x.interactable = true);
         }
     }
 
-    public void SpawnPlayerUIPrefab(PlayerManager player)
+    public GameObject SpawnPlayerUIPrefab(PlayerManager player)
     {
         GameObject newUIPlayer = Instantiate(UIPlayerPrefab, UIPlayerParent);
         newUIPlayer.GetComponent<UIPlayer>().SetPlayer(player);
         //newUIPlayer.transform.SetSiblingIndex(player.playerIndex-1);  //Uncomment it if you want all clients to be syncronized in the lobby panel and show in the same order.
+        return newUIPlayer;
     }
 
     public void BeginGame()
     {
         PlayerManager.localPlayer.BeginGame();
     }
-    
-    
+
+    public void SearchGame()
+    {
+        //Debug.Log("Searching for game!..");
+        searchCanvas.SetActive(true);
+        StartCoroutine(SearchingForGame());
+    }
+
+    IEnumerator SearchingForGame()
+    {
+        // searching = true; // an example of a coroutine with wait for seconds.
+        // WaitForSeconds chechEveryFewSeconds = new WaitForSeconds(1);
+        // while (searching)
+        // {
+        //     yield return chechEveryFewSeconds;
+        //     if (searching)
+        //     {
+        //         PlayerManager.localPlayer.SearchGame();
+        //     }
+        // }
+        
+        searching = true; // an example of a coroutine with time -= time.deltatime.
+        float currentTime = 1;
+        while (searching)
+        {
+            if (currentTime > 0)
+            {
+                currentTime -= Time.deltaTime;
+            }
+            else
+            {
+                currentTime = 1;
+                PlayerManager.localPlayer.SearchGame();
+            }
+            yield return null;
+        }
+
+    }
+    public void SearchSuccess(bool success, string matchID)
+    {
+        
+        if (success)
+        {
+            searchCanvas.SetActive(false);
+            JoinSuccess(success,matchID);
+            searching = false;
+        }
+    }
+
+    public void SearchCancel()
+    {
+        searchCanvas.SetActive(false);
+        searching = false;
+        lobbySelectables.ForEach(x => x.interactable = true);
+    }
+
+    public void DisconnectLobby()
+    {
+        if(playerLobbyUI != null) Destroy(playerLobbyUI);
+        PlayerManager.localPlayer.DisconnectGame();
+
+        playersPanel.SetActive(false);
+        lobbySelectables.ForEach(x=>x.interactable = true);
+        beginGameButton.gameObject.SetActive(false);
+    }
 }

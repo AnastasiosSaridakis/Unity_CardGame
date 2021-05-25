@@ -131,8 +131,8 @@ public class DataBridge : MonoBehaviour
                     
                     if (extractedData.Pid == FirebaseAuth.DefaultInstance.CurrentUser.UserId)
                     {
-                        print("Username of p is: " + extractedData.Username);
-                        print("pid of p is: " + extractedData.Pid);
+                        //print("Username of p is: " + extractedData.Username);
+                        //print("pid of p is: " + extractedData.Pid);
 
                         UIManager.Instance.SetUsername(extractedData.Username);
 
@@ -146,7 +146,7 @@ public class DataBridge : MonoBehaviour
                             Deck extractedData2 = JsonUtility.FromJson<Deck>(t2);
 
                             DeckManager.Instance.PlayerDeckList.Add(extractedData2);
-                            print("deck value is: " + extractedData2.PlayerDeck);
+                           // print("deck value is: " + extractedData2.PlayerDeck);
                         }
                     }
                 }

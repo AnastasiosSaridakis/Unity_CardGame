@@ -40,17 +40,17 @@ namespace tutorialOLD
     void CmdHostGame(string _matchID)
     {
         matchID = _matchID;
-        if(MatchMaker.instance.HostGame(_matchID, gameObject, out playerIndex))
-        {
-            Debug.Log("<color = green>Game hosted successfully</color>");
-            networkMatchChecker.matchId = _matchID.ToGuid();
-            TargetHostGame(true,_matchID);
-        }
-        else
-        {
-            Debug.Log("<color = red>Game hosted failed</color>");
-            TargetHostGame(false,_matchID);
-        }
+        // if(MatchMaker.instance.HostGame(_matchID, gameObject, out playerIndex))
+        // {
+        //     Debug.Log("<color = green>Game hosted successfully</color>");
+        //     networkMatchChecker.matchId = _matchID.ToGuid();
+        //     TargetHostGame(true,_matchID);
+        // }
+        // else
+        // {
+        //     Debug.Log("<color = red>Game hosted failed</color>");
+        //     TargetHostGame(false,_matchID);
+        // }
     }
 
     [TargetRpc]

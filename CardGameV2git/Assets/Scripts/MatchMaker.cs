@@ -12,6 +12,10 @@ public class Match
 {
     public string matchID;
 
+    public bool publicMatch;
+    public bool inMatch;
+    public bool matchFull;
+    
     public SyncListGameObject players = new SyncListGameObject();
 
     public Match(string matchID, GameObject player)
@@ -41,20 +45,22 @@ public class MatchMaker : NetworkBehaviour
         instance = this;
     }
     
-    public bool HostGame(string _matchID, GameObject _player, out int playerIndex)
+    public bool HostGame(string _matchID, GameObject _player,bool publicMatch, out int playerIndex)
     {
         playerIndex = -1;
         if (!matchIDs.Contains(_matchID))
         {
-            matchIDs.Add((_matchID));
-            matches.Add(new Match(_matchID,_player));
-            Debug.Log("Match generated");
+            matchIDs.Add(_matchID);
+            Match match = new Match(_matchID, _player);
+            match.publicMatch = publicMatch;
+            matches.Add(match);
+            //Debug.Log("Match generated");
             playerIndex = 1;
             return true;
         }
         else
         {
-            Debug.Log("Match ID already exists");
+            //Debug.Log("Match ID already exists");
             return false;
         }
     }
@@ -73,16 +79,35 @@ public class MatchMaker : NetworkBehaviour
                 }
                 
             }
-            Debug.Log("Match joined");
+            Debug.Log("<color=green>Match joined</color>");
             return true;
         }
         else
         {
-            Debug.Log("Match ID doesnt exist");
+            Debug.Log("<color=red>Match ID doesnt exist</color>");
             return false;
         }
     }
 
+    public bool SearchGame(GameObject _player, out int playerIndex, out string matchID)
+    {
+        playerIndex = -1;
+        matchID = string.Empty;
+        
+        for (int i = 0; i < matches.Count; i++)
+        {
+            if (matches[i].publicMatch && !matches[i].matchFull && !matches[i].inMatch)
+            {
+                matchID = matches[i].matchID;
+                if (JoinGame(matchID, _player, out playerIndex))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false; 
+    }
     public void BeginGame(string _matchID)
     {
         GameObject newTurnManager = Instantiate((turnManagerPrefab));
@@ -119,8 +144,30 @@ public class MatchMaker : NetworkBehaviour
                 _id += (random - 26).ToString();
             }
         }
-        Debug.Log($"Random match ID: {_id}");
+        //Debug.Log($"Random match ID: {_id}");
         return _id;
+    }
+
+    public void PlayerDisconnected(PlayerManager player, string _matchID)
+    {
+        for (int i = 0; i < matches.Count; i++)
+        {
+            if (matches[i].matchID == _matchID)
+            {
+                int playerIndex = matches[i].players.IndexOf(player.gameObject);
+                matches[i].players.RemoveAt(playerIndex);
+                Debug.Log($"Player disconnected from match {_matchID} | {matches[i].players.Count} players remaining.");
+
+                if (matches[i].players.Count == 0)
+                {
+                    Debug.Log(($"No more players in match. Terminating {_matchID}"));
+                    matches.RemoveAt(i);
+                    matchIDs.Remove(_matchID);
+                }
+
+                break;
+            }
+        }
     }
 }
 public static class MatchExtensions

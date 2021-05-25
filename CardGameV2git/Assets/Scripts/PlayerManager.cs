@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -27,20 +28,36 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar] public int playerIndex;
 
     private NetworkMatchChecker networkMatchChecker;
-    
-    private void Start()
+
+    [SerializeField] private GameObject playerLobbyUI;
+
+    private void Awake()
     {
         networkMatchChecker = GetComponent<NetworkMatchChecker>();
+    }
+
+    public override void OnStartClient()
+    {
         if (isLocalPlayer)
         {
             localPlayer = this;
-            Debug.Log(("IT IS LOCAL PLAYER"));
+            //Debug.Log(("IT IS LOCAL PLAYER"));
         }
         else
         {
-            UILobby.Instance.SpawnPlayerUIPrefab(this);
-            Debug.Log(("NOT LOCAL PLAYER"));
+            playerLobbyUI = UILobby.Instance.SpawnPlayerUIPrefab(this);
+           // Debug.Log(("NOT LOCAL PLAYER"));
         }
+    }
+
+    public override void OnStopClient()
+    {
+        ClientDisconnect();
+    }
+
+    public override void OnStopServer()
+    {
+        ServerDisconnect();
     }
     /*public override void OnStartClient()
     {
@@ -498,25 +515,25 @@ public class PlayerManager : NetworkBehaviour
     
     #region Host
     /*Host game commands and RPC's*/
-    public void HostGame()
+    public void HostGame(bool publicMatch)
     {
         string matchID = MatchMaker.GetRandomMatchID();
-        CmdHostGame(matchID);
+        CmdHostGame(matchID,publicMatch);
     }
 
     [Command]
-    void CmdHostGame(string _matchID)
+    void CmdHostGame(string _matchID, bool publicMatch)
     {
         matchID = _matchID;
-        if(MatchMaker.instance.HostGame(_matchID, gameObject, out playerIndex))
+        if(MatchMaker.instance.HostGame(_matchID, gameObject,publicMatch , out playerIndex))
         {
-            Debug.Log("<color=green>Game hosted successfully</color>");
+            Debug.Log($"<color=green>Game hosted successfully | ID: {_matchID}</color>");
             networkMatchChecker.matchId = _matchID.ToGuid();
             TargetHostGame(true,_matchID, playerIndex);
         }
         else
         {
-            Debug.Log("<color=red>Game hosted failed</color>");
+            Debug.Log("<color=red>Game host failed | ID already exists!</color>");
             TargetHostGame(false,_matchID, playerIndex);
         }
     }
@@ -526,7 +543,7 @@ public class PlayerManager : NetworkBehaviour
     {
         this.playerIndex = _playerIndex;
         matchID = _matchID;
-        Debug.Log($"MatchID: {matchID} == {_matchID}");
+        //Debug.Log($"MatchID: {matchID} == {_matchID}");
         UILobby.Instance.HostSuccess(success, _matchID);
     }
     #endregion
@@ -544,13 +561,13 @@ public class PlayerManager : NetworkBehaviour
         matchID = _matchID;
         if(MatchMaker.instance.JoinGame(_matchID, gameObject, out playerIndex))
         {
-            Debug.Log("<color=green>Game hosted successfully</color>");
+            //Debug.Log("<color=green>Game joined successfully</color>");
             networkMatchChecker.matchId = _matchID.ToGuid();
             TargetJoinGame(true,_matchID, playerIndex);
         }
         else
         {
-            Debug.Log("<color=red>Game hosted failed</color>");
+            //Debug.Log("<color=red>Game join failed</color>");
             TargetJoinGame(false,_matchID, playerIndex);
         }
     }
@@ -560,9 +577,43 @@ public class PlayerManager : NetworkBehaviour
     {
         this.playerIndex = _playerIndex;
         matchID = _matchID;
-        Debug.Log($"MatchID: {matchID} == {_matchID}");
+        //Debug.Log($"MatchID: {matchID} == {_matchID}");
         UILobby.Instance.JoinSuccess(success,_matchID);
     }
+    #endregion
+
+    #region SearhMatch
+
+    public void SearchGame()
+    {
+        CmdSearchGame();
+    }
+
+    [Command]
+    void CmdSearchGame()
+    {
+        if(MatchMaker.instance.SearchGame(gameObject, out playerIndex,out matchID))
+        {
+            //Debug.Log("<color=green>Game found</color>");
+            networkMatchChecker.matchId = matchID.ToGuid();
+            TargetSearchGame(true,matchID, playerIndex);
+        }
+        else
+        {
+            //Debug.Log("<color=red>Game not found</color>");
+            TargetSearchGame(false,matchID, playerIndex);
+        }
+    }
+
+    [TargetRpc]
+    void TargetSearchGame(bool success,string _matchID,int _playerIndex)
+    {
+        this.playerIndex = _playerIndex;
+        matchID = _matchID;
+        Debug.Log($"MatchID: {matchID} == {_matchID}");
+        UILobby.Instance.SearchSuccess(success,_matchID);
+    }
+
     #endregion
     
     #region BeginGame
@@ -590,6 +641,49 @@ public class PlayerManager : NetworkBehaviour
         SceneManager.LoadScene(3, LoadSceneMode.Additive);
     }
     
+
+    #endregion
+
+    #region DisconnectGame
+
+    public void DisconnectGame()
+    {
+        CmdDisconnectGame();
+    }
+    [Command]
+    void CmdDisconnectGame()
+    {
+        ServerDisconnect();
+    }
+
+    void ServerDisconnect()
+    {
+        try
+        {
+            MatchMaker.instance.PlayerDisconnected(this,matchID);
+            RpcDisconnectGame();
+            networkMatchChecker.matchId = string.Empty.ToGuid();
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    [ClientRpc]
+    void RpcDisconnectGame()
+    {
+        ClientDisconnect();
+    }
+
+    void ClientDisconnect()
+    {
+        if (playerLobbyUI != null)
+        {
+            Destroy(playerLobbyUI);
+        }
+    }
 
     #endregion
 
