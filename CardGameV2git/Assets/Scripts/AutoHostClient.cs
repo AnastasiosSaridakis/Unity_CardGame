@@ -22,9 +22,18 @@ public class AutoHostClient : MonoBehaviour
       }
    }
 
-   public void JoinLocal()
+   public void JoinServer()
    {
-      networkManager.networkAddress = ServerAddress;
-      networkManager.StartClient();
+      if(networkManager.networkAddress.Equals("")){
+         Debug.Log("Connecting to localhost");
+         networkManager.networkAddress = "localhost";
+         networkManager.StartClient();
+      }
+      else
+      {
+         Debug.Log($"Connecting to {networkManager.networkAddress}");
+         networkManager.StartClient();
+      }
+         
    }
 }
