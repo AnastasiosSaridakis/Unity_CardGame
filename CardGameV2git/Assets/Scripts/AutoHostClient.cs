@@ -7,6 +7,7 @@ using Mirror;
 public class AutoHostClient : MonoBehaviour
 {
    [SerializeField] private NetworkManager networkManager;
+   [SerializeField] private string ServerAddress;
 
    public void Start()
    {
@@ -23,7 +24,7 @@ public class AutoHostClient : MonoBehaviour
 
    public void JoinLocal()
    {
-      networkManager.networkAddress = "localhost";
+      networkManager.networkAddress = ServerAddress;
       networkManager.StartClient();
    }
 }

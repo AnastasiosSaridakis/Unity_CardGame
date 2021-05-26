@@ -82,7 +82,7 @@ MonoBehaviour:
   onlineScene: Assets/Scenes/Lobby.unity
   transport: {fileID: 1308741396539556034}
   networkAddress: localhost
-  maxConnections: 4
+  maxConnections: 64
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
@@ -104,6 +104,7 @@ MonoBehaviour:
   - {fileID: 5998690727173856858, guid: baa440df213e8c348af4d4d4ebb13ef6, type: 3}
   - {fileID: 6084879592885598590, guid: 7000e17c73507a1468c5a763c3481c61, type: 3}
   - {fileID: 6084879592885598590, guid: 9eb5e21760ba1184aa6e84407cdd86c7, type: 3}
+  - {fileID: 4249160492522275573, guid: 50c5027a2dc202b41b5fd7fb3172ec88, type: 3}
 --- !u!114 &1308741396539556044
 MonoBehaviour:
   m_ObjectHideFlags: 0

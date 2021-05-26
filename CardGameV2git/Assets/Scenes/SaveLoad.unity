@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -14162,6 +14162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   networkManager: {fileID: 1875288738}
+  ServerAddress: localhost
 --- !u!4 &1627114059
 Transform:
   m_ObjectHideFlags: 0
@@ -16232,17 +16233,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1308741396539556045, guid: c54e9e1663c2b5c44b73535205f77c1e,
-        type: 3}
-      propertyPath: spawnPrefabs.Array.size
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 1308741396539556045, guid: c54e9e1663c2b5c44b73535205f77c1e,
-        type: 3}
-      propertyPath: spawnPrefabs.Array.data[13]
-      value: 
-      objectReference: {fileID: 4249160492522275573, guid: 50c5027a2dc202b41b5fd7fb3172ec88,
-        type: 3}
     - target: {fileID: 1308741396539556046, guid: c54e9e1663c2b5c44b73535205f77c1e,
         type: 3}
       propertyPath: m_Name
