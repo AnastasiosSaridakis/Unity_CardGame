@@ -11,6 +11,7 @@ public class UIGame : MonoBehaviour
     public GameObject mulliganPanel;
     public Button keepButton;
     public Button mulliganButton;
+    public TMP_Text waitingPlayerText;
 
     [Header("Playing Phase")] 
     public Button endTurnButton;
@@ -20,7 +21,7 @@ public class UIGame : MonoBehaviour
     public GameObject enemyHand;
     public GameObject enemyTableTop;
     
-    public GameObject manaCrystal;
+    public TMP_Text manaCrystalText;
     public GameObject playerPortrait;
     public GameObject enemyPlayerPortrait;
     
@@ -46,6 +47,12 @@ public class UIGame : MonoBehaviour
                     _instance = this;
                 }
     }
-    
-    
+
+    private void Start()
+    {
+        hand = GameObject.FindGameObjectWithTag("Hand");
+        tableTop = GameObject.FindGameObjectWithTag("Tabletop");
+        //enemyHand= GameObject.FindGameObjectWithTag("Hand")
+        enemyTableTop = GameObject.FindGameObjectWithTag("EnemyTabletop");
+    }
 }

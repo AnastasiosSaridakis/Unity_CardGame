@@ -26,10 +26,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     private void Start()
     {
-        enemyHand = GameObject.FindWithTag("EnemyHand");
-        enemytabletop = GameObject.FindWithTag("EnemyTabletop");
-        tabletop = GameObject.FindWithTag("Tabletop");
-        hand = GameObject.FindWithTag("Hand");
+        enemyHand = UIGame.Instance.enemyHand;
+        enemytabletop = UIGame.Instance.enemyTableTop;
+        tabletop = UIGame.Instance.tableTop;
+        hand = UIGame.Instance.hand;
         canAttack = false;
 
         enemyHand.transform.GetComponent<Image>().raycastTarget = false;

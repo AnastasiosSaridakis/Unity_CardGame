@@ -19,7 +19,7 @@ public class PlayerManager : NetworkBehaviour
     private GameObject zoomCard;
     public GameObject placeHolder;
 
-    [SyncVar(hook = nameof(SetPlayersReady))]
+    [SyncVar]
     public int playersReady;
 
     [Header("PlayerConnection")]
@@ -83,16 +83,50 @@ public class PlayerManager : NetworkBehaviour
         if (scene.buildIndex == 3)
         {
             Debug.Log($"<color=red> 2 game scene finised loading</color>");
-            if (isLocalPlayer)
-                GetDeck();
-            //CmdSpawnUI();
+           // CmdSpawnObjects();
+            GameManager.Instance.StartGame();
             if (isClientOnly)
             {
+                hand = UIGame.Instance.hand;
+                enemyHand = UIGame.Instance.enemyHand;
+                tabletop = UIGame.Instance.tableTop;
+                enemytabletop = UIGame.Instance.enemyTableTop;
+                mulliganPanel = UIGame.Instance.mulliganPanel;
                 //isMyTurn = true;
                 //CmdChangeTurn();
             }
         }
     }
+
+    /*[Command]
+    public void CmdSpawnObjects()
+    {
+        if (isServer)
+        {
+            Debug.Log($"im in server - preparing to spawn items");
+            NetworkServer.SpawnObjects();
+            RpcSpawnObjects();
+        }
+    }*/
+
+    /*[ClientRpc]
+    public void RpcSpawnObjects()
+    {
+        if (isClient)
+        {
+            setPlayersActive();
+            Debug.Log($"Im in clientRPC - preparing to get spawned items");
+            NetworkClient.PrepareToSpawnSceneObjects();
+        }
+    }
+
+    [Command]
+    public void setPlayersActive()
+    {
+        NetworkServer.SetClientReady(connectionToClient);
+        Debug.Log($"im in server - setting client {connectionToClient} ready");
+    }*/
+    
     /*public override void OnStartClient()
     {
         base.OnStartClient();
@@ -129,21 +163,13 @@ public class PlayerManager : NetworkBehaviour
     //}
 
         
-    public void SetPlayersReady(int oldPlayers, int newPlayers)
+    public void SetPlayerReady()
     {
-       GameManager.Instance.playersReady = newPlayers;
-       if(newPlayers == 2)
-        {
-            GameManager.Instance.ChangeGameString("Mulligan");
-        }
+        CmdPlayerReady();
     }
 
     public void DealCards(int id)
     {
-        if (GameManager.Instance.DebugMode)
-        {
-            GameManager.Instance.currentGameState = GameManager.GameState.PlayerTurn;
-        }
         if (GameManager.Instance.currentGameState == GameManager.GameState.Mulligan)
         {
             CmdMulliganCards(id);
@@ -179,16 +205,24 @@ public class PlayerManager : NetworkBehaviour
     #region Commands
 
     [Command]
-    public void CmdSpawnUI()
+    public void CmdPlayerReady()
     {
-        NetworkServer.SpawnObjects();
-        Debug.Log("CMDSpawnUI");
-        RpcSpawnUI();
+        playersReady++;
+        RpcPlayerReady(playersReady);
     }
-    [Command]
-    public void CmdPlayerReady(int players)
+
+    [ClientRpc]
+    public void RpcPlayerReady(int currentPlayersReady)
     {
-        playersReady = players + 1;
+        if (currentPlayersReady == 2 && isLocalPlayer)
+        {
+            Debug.Log($"Players are {currentPlayersReady} and starting mulligan");
+            GameManager.Instance.ChangeGameString("Mulligan");
+        }
+        else
+        {
+            Debug.Log($"Players are {currentPlayersReady} and waiting OR not local");
+        }
     }
 
     [Command]
@@ -212,7 +246,7 @@ public class PlayerManager : NetworkBehaviour
     [Command]
     public void CmdDealCards(int id)
     {
-        Debug.Log("6");
+        Debug.Log("Inside CMD DEAL CARDS");
         foreach (Card card in CardDatabase.Instance.cardList)
         {
             if (card.id == id)
@@ -320,22 +354,6 @@ public class PlayerManager : NetworkBehaviour
 
     #region Client
 
-    [ClientRpc]
-    public void RpcSpawnUI()
-    {
-        if (isClientOnly)
-        {
-            GameManager.Instance.SetUpGame();
-            hand = GameObject.FindWithTag("Hand");
-            tabletop = GameObject.FindWithTag("Tabletop");
-            enemyHand = GameObject.FindWithTag("EnemyHand");
-            enemytabletop = GameObject.FindWithTag("EnemyTabletop");
-            mulliganPanel = GameObject.FindWithTag("MulliganPanel");
-            Debug.Log("<color=red>3 Spawning UI and Setting it</color>");
-            GameManager.Instance.ChangeGameString("Mulligan");
-
-        }
-    }
     public void TargetZoomCard(NetworkConnection target, GameObject card)
     {
         if (hasAuthority)
@@ -381,7 +399,6 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     void RpcShowCard(GameObject go,int id, string Type)
     {
-        Debug.Log("7");
         if (Type == "Dealt")
         {
             if (hasAuthority)
@@ -472,8 +489,7 @@ public class PlayerManager : NetworkBehaviour
         GameManager.Instance.ChangeGameState(GameManager.GameState.PlayerTurn);
         if (GameManager.Instance.maxMana < 10 && pm.isMyTurn)
             GameManager.Instance.maxMana++;
-        if (GameManager.Instance.DebugMode)
-            GameManager.Instance.maxMana = 100;
+        Debug.Log($"max mana is {GameManager.Instance.maxMana}");
         GameManager.Instance.currentBattlePhase = GameManager.BattlePhase.None;
         
         GameManager.Instance.currentMana = GameManager.Instance.maxMana;
@@ -697,6 +713,12 @@ public class PlayerManager : NetworkBehaviour
         }
         TargetBeginGame(_players,_turnManager, _players[0].diceRoll);
     }
+
+    /*[Command]
+    public void CmdSetPlayersNotReady()
+    {
+        NetworkServer.SetClientNotReady(connectionToClient);
+    }*/
     [TargetRpc]
     void TargetBeginGame(List<PlayerManager> _players,TurnManager _turnManager, int roll)
     {
@@ -715,7 +737,13 @@ public class PlayerManager : NetworkBehaviour
             _players[0].isMyTurn = false;
             _players[1].isMyTurn = true;
             Debug.Log($"<color=yellow> Client plays first </color>");
-        } 
+        }
+
+        if (isLocalPlayer)
+        {
+            Debug.Log("Setting client not ready");
+            //CmdSetPlayersNotReady();
+        }
         SceneManager.LoadScene(3, LoadSceneMode.Additive);
     }
     #endregion
@@ -763,30 +791,31 @@ public class PlayerManager : NetworkBehaviour
 
     #endregion
 
-    #region DeckManagement
+    #region DeckManagement 
+    //not implemented right, needs rework when refactoring
 
-    void GetDeck()
+    /*public void GetDeck(TurnManager turnManager)
     {
-        CmdGetDeck();
+        CmdGetDeck(turnManager);
     }
 
     [Command]
-    void CmdGetDeck()
+    void CmdGetDeck(TurnManager turnManager)
     {
+        Debug.Log($"hi from server. TM is {turnManager.name}");
         foreach (var id in DeckManager.Instance.currentSelectedDeck.PlayerDeck)
         {
-           myDeck.Add(id);
            Debug.Log($"card id is: {id}");
         }
 
-        TargetGetDeck();
+        //TargetGetDeck();
     }
 
-    [TargetRpc]
-    void TargetGetDeck()
+    //[TargetRpc]
+    /*void TargetGetDeck()
     {
         myTurnManager.deck = myDeck;
-    }
+    }#1#*/
     #endregion
 }
 

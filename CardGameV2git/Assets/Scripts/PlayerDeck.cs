@@ -103,7 +103,6 @@ public class PlayerDeck : MonoBehaviour
         
         if (deck.Count > 0)
         {
-            Debug.Log("5");
             Card card = deck[0];
             deck.RemoveAt(0);
             //Debug.Log("I've drawn a " + card.name);

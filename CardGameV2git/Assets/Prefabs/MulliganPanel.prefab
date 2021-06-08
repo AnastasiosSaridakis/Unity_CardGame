@@ -728,14 +728,14 @@ RectTransform:
   m_GameObject: {fileID: 7431743285047874060}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6666667, y: 0.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 17219452282960459}
-  m_RootOrder: 1
+  m_Father: {fileID: 3600415877421964706}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 45, y: -97}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 960, y: -585.02454}
   m_SizeDelta: {x: 877.8854, y: 90.04911}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &7595067104554818136
@@ -788,12 +788,12 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 64
+  m_fontSize: 58.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -802,7 +802,7 @@ MonoBehaviour:
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
-  m_textAlignment: 257
+  m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -854,7 +854,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &17219452282960459
 RectTransform:
   m_ObjectHideFlags: 0
@@ -867,7 +867,6 @@ RectTransform:
   m_LocalScale: {x: 1.5, y: 2, z: 1}
   m_Children:
   - {fileID: 8803365653910801139}
-  - {fileID: 4471522537828584088}
   m_Father: {fileID: 3600415877421964706}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1021,6 +1020,7 @@ RectTransform:
   - {fileID: 7677495507514379990}
   - {fileID: 5898990208358552645}
   - {fileID: 17219452282960459}
+  - {fileID: 4471522537828584088}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

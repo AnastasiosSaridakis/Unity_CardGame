@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameManager : NetworkBehaviour
+public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
     public static GameManager Instance { get { return _instance; } }
@@ -24,9 +24,9 @@ public class GameManager : NetworkBehaviour
     public Button mulliganButton;
     public Button startButton;
     public Button keepButton;
-    private TextMeshProUGUI waitingPlayerText;
-    private TextMeshProUGUI turnText;
-    private TextMeshProUGUI manaText;
+    private TMP_Text waitingPlayerText;
+    private TMP_Text turnText;
+    private TMP_Text manaText;
     public GameObject playerPortrait;
     public GameObject enemyPortrait;
     public PlayerDeck playerDeck;
@@ -44,7 +44,7 @@ public class GameManager : NetworkBehaviour
     public Material greenFlame;
     public Material redFlame;
     public Material blueFlame;
-    public bool DebugMode;
+    private bool DebugMode; //I AM USELESS PLZ REMOVE ME
 
     void Awake()
     {
@@ -60,25 +60,27 @@ public class GameManager : NetworkBehaviour
 
     private void Start()
     {
-        /*turnText = GameObject.FindWithTag("TurnText").GetComponent<TextMeshProUGUI>();
-        manaText = GameObject.FindWithTag("ManaCrystal").GetComponentInChildren<TextMeshProUGUI>();
-        playerDeck = GameObject.FindWithTag("PlayerDeck").GetComponent<PlayerDeck>();
-        hand = GameObject.FindWithTag("Hand");
-        tabletop = GameObject.FindWithTag("Tabletop");
-        mulliganPanel = GameObject.FindWithTag("MulliganPanel");
-        playerPortrait = GameObject.FindWithTag("Player");
-        enemyPortrait = GameObject.FindWithTag("EnemyPlayer");
+        turnText = UIGame.Instance.turnText;
+        manaText = UIGame.Instance.manaCrystalText;
+        //playerDeck = GameObject.FindWithTag("PlayerDeck").GetComponent<PlayerDeck>();
+        hand = UIGame.Instance.hand;
+        tabletop = UIGame.Instance.tableTop;
+        mulliganPanel = UIGame.Instance.mulliganPanel;
+        playerPortrait = UIGame.Instance.playerPortrait;
+        enemyPortrait = UIGame.Instance.enemyPlayerPortrait;
+        endTurnButton = UIGame.Instance.endTurnButton;
+        mulliganButton = UIGame.Instance.mulliganButton;
+        keepButton = UIGame.Instance.keepButton;
+        //waitingPlayerText = UIGame.Instance.waitingPlayerText;
 
         currentBattlePhase = BattlePhase.None;
         minionSelected = null;
         Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.ForceSoftware);
-        
-        
-            endTurnButton.interactable = false;
-            startButton = mulliganPanel.GetComponent<MulliganPanel>().GetStartGameButton();
-            mulliganButton = mulliganPanel.GetComponent<MulliganPanel>().GetMulliganButton();
-            keepButton = mulliganPanel.GetComponent<MulliganPanel>().GetKeepButton();
-            waitingPlayerText = mulliganPanel.GetComponent<MulliganPanel>().GetPlayerText();*/
+        endTurnButton.interactable = false;
+            //startButton = mulliganPanel.GetComponent<MulliganPanel>().GetStartGameButton();
+            //mulliganButton = mulliganPanel.GetComponent<MulliganPanel>().GetMulliganButton();
+            //keepButton = mulliganPanel.GetComponent<MulliganPanel>().GetKeepButton();
+            //waitingPlayerText = mulliganPanel.GetComponent<MulliganPanel>().GetPlayerText();
         
     }
     
@@ -120,7 +122,6 @@ public class GameManager : NetworkBehaviour
             for (int i = 0; i < 5; i++)
             {
                 playerDeck.Draw();
-                Debug.Log("Drawing cards for mulligan panel");
             }
         }
         else if (gameState == GameState.PlayerTurn)
@@ -187,7 +188,7 @@ public class GameManager : NetworkBehaviour
         if (state == "Mulligan")
         {
             
-            startButton.gameObject.SetActive(false);
+            //startButton.gameObject.SetActive(false);
             
             mulliganButton.gameObject.SetActive(true);
             
@@ -260,51 +261,16 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
-        if (DebugMode)
-        {
-            playerManager.CmdPlayerReady(playersReady);
-        }
-        else
-        {
-            NetworkIdentity networkIdentity = NetworkClient.connection.identity;
-            playerManager = networkIdentity.GetComponent<PlayerManager>();
+        NetworkIdentity networkIdentity = NetworkClient.connection.identity;
+        playerManager = networkIdentity.GetComponent<PlayerManager>();
 
-            waitingPlayerText.gameObject.SetActive(true);
-            startButton.interactable = false;
+        //waitingPlayerText.gameObject.SetActive(true);
+       // startButton.interactable = false;
 
-            playerManager.CmdPlayerReady(playersReady);
+        playerManager.SetPlayerReady();
 
-        }
     }
 
-    public void SetUpGame()
-    { 
-        turnText = GameObject.FindWithTag("TurnText").GetComponent<TextMeshProUGUI>();
-        manaText = GameObject.FindWithTag("ManaCrystal").GetComponentInChildren<TextMeshProUGUI>();
-        playerDeck = GameObject.FindWithTag("PlayerDeck").GetComponent<PlayerDeck>();
-        hand = GameObject.FindWithTag("Hand");
-        tabletop = GameObject.FindWithTag("Tabletop");
-        mulliganPanel = GameObject.FindWithTag("MulliganPanel");
-        playerPortrait = GameObject.FindWithTag("Player");
-        enemyPortrait = GameObject.FindWithTag("EnemyPlayer");
-
-        currentBattlePhase = BattlePhase.None;
-        minionSelected = null;
-        Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.ForceSoftware);
-        
-        
-            //endTurnButton.interactable = false;
-            
-            startButton = mulliganPanel.GetComponent<MulliganPanel>().GetStartGameButton();
-            mulliganButton = mulliganPanel.GetComponent<MulliganPanel>().GetMulliganButton();
-            keepButton = mulliganPanel.GetComponent<MulliganPanel>().GetKeepButton();
-            waitingPlayerText = mulliganPanel.GetComponent<MulliganPanel>().GetPlayerText();
-            
-            
-            
-            
-            
-    }
     public void WonGame()
     {
         endGamePanel.SetActive(true);

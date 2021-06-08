@@ -19,7 +19,7 @@ public class Registration : MonoBehaviour
     public GameObject registerPanel;
     public AuthController authC;
     public Button submitRegisterBtn;
-    private string username = "";
+    public string username = "";
 
     
     public void VerifyInput()
@@ -43,15 +43,15 @@ public class Registration : MonoBehaviour
         {
             errorLabel.SetText("");
             username = usernameField.text;
+            Debug.Log($"Uname is {username} ...");
             submitRegisterBtn.interactable = true;
         }
     }
 
     public void SwitchPanel()
     {
-        Debug.Log("Hi im in Switchpanel");
         emailField.text = "";
-        authC.SetUsername(username);
+        authC.username = username;
         usernameField.text = "";
         passwordField.text = "";
         confirmPwField.text = "";

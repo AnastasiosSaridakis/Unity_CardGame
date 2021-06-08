@@ -14,6 +14,7 @@ public class AuthController : MonoBehaviour
     public Registration regScript;
     public bool regSuccess = false;
     public GameObject regSuccessToast;
+    public GameObject levelLoader;
     public string errorTextLoggin, errorTextRegister;
     public string username;
     public string password;
@@ -103,7 +104,7 @@ public class AuthController : MonoBehaviour
 
         if (LoadNextScene)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            levelLoader.GetComponent<LevelLoader>().LoadNextLevel();
         }
 
         if (regSuccess)
@@ -150,7 +151,8 @@ public class AuthController : MonoBehaviour
             if (task.IsCompleted)
             {
                 print("Registration Completed"); //from here try to save into firebase, username Pid and deck.
-                Player data = new Player(username, FirebaseAuth.DefaultInstance.CurrentUser.UserId, password);
+                Player data = new Player(regScript.username, FirebaseAuth.DefaultInstance.CurrentUser.UserId, password);
+                Debug.Log($"Player data is: Username - {data.Username} | Password - {data.Password} | pID - {data.Pid}");
                 Deck data2 = new Deck(decks[0].DeckName, decks[0].PlayerDeck);
                 Deck data3 = new Deck(decks[1].DeckName, decks[1].PlayerDeck);
                 string jsonData = JsonUtility.ToJson(data);
@@ -213,11 +215,6 @@ public class AuthController : MonoBehaviour
         {
             Debug.Log("Neither Loggin nor Register type");
         }
-    }
-
-    public void SetUsername(string uname)
-    {
-        username = uname;
     }
 
     public void ClearErrorMessage()

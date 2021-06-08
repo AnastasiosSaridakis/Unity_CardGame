@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 
-public class CardZoom : NetworkBehaviour
+public class CardZoom : MonoBehaviour
 {
     public PlayerManager PlayerManager;
     
