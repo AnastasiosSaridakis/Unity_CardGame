@@ -66,5 +66,5 @@ MonoBehaviour:
   playersReady: 0
   endGamePanel: {fileID: 0}
   greenFlame: {fileID: 2100000, guid: 0fedbafc5425fc842b7d28364a08715d, type: 2}
-  redFlame: {fileID: 0}
-  blueFlame: {fileID: 0}
+  redFlame: {fileID: 2100000, guid: 2d5526c3dbe051a41a75d48500793fde, type: 2}
+  blueFlame: {fileID: 2100000, guid: 9ad38e35bfe3d6b48931a1e503f9cb28, type: 2}

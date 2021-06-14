@@ -106,7 +106,7 @@ public class PlayerDeck : MonoBehaviour
             Card card = deck[0];
             deck.RemoveAt(0);
             //Debug.Log("I've drawn a " + card.name);
-            PlayerManager.DealCards(card.id);
+            PlayerManager.DealCards(card);
             RefreshDeckPanel();
         }
         else

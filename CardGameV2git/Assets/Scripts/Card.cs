@@ -14,7 +14,7 @@ public class Card : ScriptableObject
     public int health;
     public string description;
     public Sprite artworkImage;
-
+    
     public Card()
     {
 

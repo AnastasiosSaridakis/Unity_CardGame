@@ -30,7 +30,8 @@ public class PlayerManager : NetworkBehaviour
     [Header("In-match")] 
     [SyncVar] public bool isMyTurn = false;
     [SyncVar] public int diceRoll;
-    [SyncVar] public List<int> myDeck;
+    [SerializeField] private List<GameObject> handList;
+    [SerializeField] private List<GameObject> tabletopList;
     
     
     private NetworkMatchChecker networkMatchChecker;
@@ -168,15 +169,15 @@ public class PlayerManager : NetworkBehaviour
         CmdPlayerReady();
     }
 
-    public void DealCards(int id)
+    public void DealCards(Card card)
     {
         if (GameManager.Instance.currentGameState == GameManager.GameState.Mulligan)
         {
-            CmdMulliganCards(id);
+            CmdMulliganCards(card.id);
         }
         else if (GameManager.Instance.currentGameState == GameManager.GameState.PlayerTurn)
         {
-            CmdDealCards(id);
+            CmdDealCards(card.id);
         }
         else
         {
@@ -184,10 +185,17 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-    public void PlayCard(GameObject card, Transform placeholderParent, int index)
+    public void EmptyHandList()
+    {
+        handList.Clear();
+    }
+    
+
+    public void PlayCard( GameObject cardObject, string placeholderParent, int index)
     {
         GameManager.Instance.ReloadText();
-        CmdPlayCard(card, placeholderParent, index);
+        CardInfo info = new CardInfo(cardObject.GetComponent<CardDisplay>().card.id);
+        CmdPlayCard(info, placeholderParent, index);
     }
 
     public void PreviewCard(int id)
@@ -228,7 +236,7 @@ public class PlayerManager : NetworkBehaviour
     [Command]
     public void CmdMulliganCards(int id)
     {
-        foreach (Card card in CardDatabase.Instance.cardList)
+        /*foreach (Card card in CardDatabase.Instance.cardList)
         {
             if (card.id == id)
             {
@@ -240,14 +248,15 @@ public class PlayerManager : NetworkBehaviour
                 //Debug.Log("I've drawn a " + card);
                 RpcShowCard(go, id, "Mulligan");
             }
-        }
+        }*/
+        RpcShowCard(id, "Mulligan");
     }
 
     [Command]
     public void CmdDealCards(int id)
     {
         Debug.Log("Inside CMD DEAL CARDS");
-        foreach (Card card in CardDatabase.Instance.cardList)
+        /*foreach (Card card in CardDatabase.Instance.cardList)
         {
             if (card.id == id)
             {
@@ -259,7 +268,8 @@ public class PlayerManager : NetworkBehaviour
                 //Debug.Log("I've drawn a " + card);
                 RpcShowCard(go, id, "Dealt");
             }
-        }
+        }*/
+        RpcShowCard(id, "Dealt");
     }
 
     [Command]
@@ -304,9 +314,9 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [Command]
-    public void CmdPlayCard(GameObject card,Transform placeholderParent,int index)
+    public void CmdPlayCard(CardInfo info,string placeholderParent,int index)
     {
-        RpcPlayCard(card, placeholderParent, index);
+        RpcPlayCard(info, placeholderParent, index);
     }
 
     [Command]
@@ -340,9 +350,9 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [Command]
-    public void CmdApplyDamage(GameObject attacker, GameObject target)
+    public void CmdApplyDamage(CardInfo attackerInfo, CardInfo targetInfo, int attackerIndex, int targetIndex, string targetType)
     {
-        RpcApplyDamage(attacker, target);
+        RpcApplyDamage(attackerInfo, targetInfo,attackerIndex,targetIndex,targetType);
     }
 
     [Command]
@@ -369,46 +379,66 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcPlayCard(GameObject card, Transform placeholderParent, int index)
+    void RpcPlayCard(CardInfo info, string placeholderParentString, int index)
     {
-        if (hasAuthority)
+        Transform placeholderParent;
+        if (placeholderParentString.Equals("tabletop"))
         {
-            card.transform.SetParent(placeholderParent);
-            card.transform.SetSiblingIndex(index);
+            placeholderParent = UIGame.Instance.tableTop.transform;
+        }
+        else if (placeholderParentString.Equals("hand"))
+        {
+            placeholderParent = UIGame.Instance.hand.transform;
         }
         else
         {
-            if(placeholderParent == hand.transform)
+            placeholderParent=null;
+            Debug.Log("placeholderParent string is wrong");
+        }
+        if (hasAuthority)
+        { 
+            
+            //card.transform.SetParent(placeholderParent);
+           // card.transform.SetSiblingIndex(index);
+        }
+        else
+        {
+            if(placeholderParent == UIGame.Instance.hand.transform)
             {
                 Debug.Log("Eimai sto RPCplaycard, NO authority, enemyhand");
-                card.transform.SetParent(enemyHand.transform, false);
-                card.transform.SetSiblingIndex(index);
+                /*card.transform.SetParent(enemyHand.transform, false);
+                card.transform.SetSiblingIndex(index);*/
             }
-            else if(placeholderParent == tabletop.transform)
+            else if(placeholderParent == UIGame.Instance.tableTop.transform)
             {
                 Debug.Log("Eimai sto RPCplaycard, NO authority, enemytabletop");
+                GameObject card = Instantiate(cardPrefab, enemytabletop.transform, false);
+                card.GetComponent<CardDisplay>().InitializeStats(info);
                 card.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                card.transform.SetParent(enemytabletop.transform, false);
                 card.transform.Rotate(0f, 0f, 180f);
                 card.transform.SetSiblingIndex(index);
-                card.GetComponent<CardDisplay>().FlipCard();
+                //card.GetComponent<CardDisplay>().FlipCard();
+                if(enemyHand.transform.GetChild(0).gameObject != null)
+                    Destroy(enemyHand.transform.GetChild(0).gameObject);
             }
         }
     }
 
     [ClientRpc]
-    void RpcShowCard(GameObject go,int id, string Type)
+    void RpcShowCard(int id, string Type)
     {
         if (Type == "Dealt")
         {
             if (hasAuthority)
             {
+                GameObject go;
+                go = Instantiate(cardPrefab);
+                handList.Add(cardPrefab);
                 foreach (Card card in CardDatabase.Instance.cardList)
                 {
                     if (card.id == id)
                     {
                         go.GetComponent<CardDisplay>().card = card;
-                        
                     }
                 }
                 if (hand.transform.childCount < GameManager.Instance.maxCardsInHand)
@@ -424,6 +454,9 @@ public class PlayerManager : NetworkBehaviour
             }
             else
             {
+                GameObject go;
+                go = Instantiate(cardPrefab);
+                
                 foreach (Card card in CardDatabase.Instance.cardList)
                 {
                     if (card.id == id)
@@ -450,6 +483,9 @@ public class PlayerManager : NetworkBehaviour
             if (hasAuthority)
             {
                 Debug.Log("RPCshowcard Mulligan HAS authority");
+                GameObject go;
+                go = Instantiate(cardPrefab);
+                handList.Add(go);
                 foreach (Card card in CardDatabase.Instance.cardList)
                 {
                     if (card.id == id)
@@ -462,6 +498,8 @@ public class PlayerManager : NetworkBehaviour
             }
             else
             {
+                GameObject go;
+                go = Instantiate(cardPrefab);
                 Debug.Log("RPCshowcard Mulligan NO authority Destroy");
                 //Destroy(go);
                 foreach (Card card in CardDatabase.Instance.cardList)
@@ -472,6 +510,7 @@ public class PlayerManager : NetworkBehaviour
                     }
                 }
                 go.transform.SetParent(enemyHand.transform, false);
+                go.transform.SetSiblingIndex(0);
                 go.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 go.GetComponent<CardDisplay>().FlipCard();
             }
@@ -489,7 +528,7 @@ public class PlayerManager : NetworkBehaviour
         GameManager.Instance.ChangeGameState(GameManager.GameState.PlayerTurn);
         if (GameManager.Instance.maxMana < 10 && pm.isMyTurn)
             GameManager.Instance.maxMana++;
-        Debug.Log($"max mana is {GameManager.Instance.maxMana}");
+       // Debug.Log($"max mana is {GameManager.Instance.maxMana}");
         GameManager.Instance.currentBattlePhase = GameManager.BattlePhase.None;
         
         GameManager.Instance.currentMana = GameManager.Instance.maxMana;
@@ -497,74 +536,91 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcApplyDamage(GameObject attacker, GameObject target)
+    public void RpcApplyDamage(CardInfo attackerInfo, CardInfo targetInfo, int attackerIndex, int targetIndex, string targetType)
     {
-        if (attacker.tag == "Card")//currently only cards can attack
+        GameObject attackerGO, targetGO = null;
+        if (isMyTurn)
         {
-            //Animator anim2 = attacker.GetComponent<Animator>();
-            //anim2.SetBool("isAttacking", true);
-            //anim2.SetBool("isAttacking", false);
+            attackerGO = tabletop.transform.GetChild(attackerIndex).gameObject;
+            targetGO = targetType.Equals("Card") ? enemytabletop.transform.GetChild(targetIndex).gameObject : GameManager.Instance.enemyPortrait;
+        }
+        else
+        {
+             attackerGO = enemytabletop.transform.GetChild(attackerIndex).gameObject;
+             targetGO = targetType.Equals("Card") ? tabletop.transform.GetChild(targetIndex).gameObject : GameManager.Instance.playerPortrait;
+        }
 
-            if (target.tag == "Card")//if both are cards, both needs to be damaged
+        if (attackerGO == null || targetGO == null)
+        {
+            Debug.Log($"attacker or target is null, returning...");
+            return;
+        }
+        
+        if (!attackerGO.CompareTag("Card")) return;
+        //Animator anim2 = attacker.GetComponent<Animator>();
+        //anim2.SetBool("isAttacking", true);
+        //anim2.SetBool("isAttacking", false);
+
+        if (targetGO.CompareTag("Card") )//if both are cards, both needs to be damaged
+        {
+            //    Debug.Log("attacker damage is: " + attacker.GetComponent<CardDisplay>().GetAttack());
+            //    Debug.Log("target damage is: " + target.GetComponent<CardDisplay>().GetAttack());
+            //    Debug.Log("attacker health is is: " + attacker.GetComponent<CardDisplay>().GetHealth());
+            //    Debug.Log("target health is is: " + target.GetComponent<CardDisplay>().GetHealth());
+                
+            targetGO.GetComponent<CardDisplay>().setHealth(targetInfo.health - attackerInfo.attack);
+            //Animator anim1 = target.GetComponent<Animator>();
+            //anim1.SetBool("isAttacking", true);
+
+            attackerGO.GetComponent<CardDisplay>().setHealth(attackerInfo.health - targetInfo.attack);
+                
+
+                
+            if (attackerGO.GetComponent<CardDisplay>().GetHealth() <= 0)
             {
-                //    Debug.Log("attacker damage is: " + attacker.GetComponent<CardDisplay>().GetAttack());
-                //    Debug.Log("target damage is: " + target.GetComponent<CardDisplay>().GetAttack());
-                //    Debug.Log("attacker health is is: " + attacker.GetComponent<CardDisplay>().GetHealth());
-                //    Debug.Log("target health is is: " + target.GetComponent<CardDisplay>().GetHealth());
-                
-                target.GetComponent<CardDisplay>().setHealth(target.GetComponent<CardDisplay>().GetHealth() - attacker.GetComponent<CardDisplay>().GetAttack());
-                //Animator anim1 = target.GetComponent<Animator>();
-                //anim1.SetBool("isAttacking", true);
-
-                attacker.GetComponent<CardDisplay>().setHealth(attacker.GetComponent<CardDisplay>().GetHealth() - target.GetComponent<CardDisplay>().GetAttack());
-                
-
-                
-                if (attacker.GetComponent<CardDisplay>().GetHealth() <= 0)
-                {
-                    attacker.GetComponent<Dissolve>().StartDissolving(); //attacker life is 0
-                    //Destroy(attacker);
+                attackerGO.GetComponent<Dissolve>().StartDissolving(); //attacker life is 0
+                //Destroy(attacker);
                     
-                }
-                if (target.GetComponent<CardDisplay>().GetHealth() <= 0)
-                {
-                    target.GetComponent<Image>().material = null;
-                    target.GetComponent<Dissolve>().StartDissolving(); //target life is 0
-                    //Destroy(target);
-                    Destroy(zoomCard);
-                }
-                else
-                {
-                    if(zoomCard!=null)
-                        zoomCard.GetComponent<CardDisplay>().setHealth(target.GetComponent<CardDisplay>().GetHealth());
-                }
-            }
-            else if (target.tag == "EnemyPlayer")//if attacker is card BUT target is player
+            } 
+            else
             {
-                if (hasAuthority)//I am doing the attac so my opponent takes damage
-                {
-                    GameManager.Instance.enemyPortrait.GetComponent<PlayerPortrait>().TakeDamage(attacker.GetComponent<CardDisplay>().GetAttack());
-                    //target.GetComponent<PlayerPortrait>().SetHealth(target.GetComponent<PlayerPortrait>().GetHealth() - attacker.GetComponent<CardDisplay>().GetAttack());
+                if(attackerGO.GetComponent<CardZoom>().zoomCard!=null)
+                    attackerGO.GetComponent<CardZoom>().zoomCard.GetComponent<CardDisplay>().setHealth(attackerInfo.health);
+                
+            }
+            if (targetGO.GetComponent<CardDisplay>().GetHealth() <= 0)
+            {
+                targetGO.GetComponent<Image>().material = null;
+                targetGO.GetComponent<Dissolve>().StartDissolving(); //target life is 0
+                //Destroy(target);
+                //Destroy(zoomCard);
+            }
+            else
+            {
+                if(targetGO.GetComponent<CardZoom>().zoomCard!=null)
+                    targetGO.GetComponent<CardZoom>().zoomCard.GetComponent<CardDisplay>().setHealth(targetInfo.health);
+            }
+        }
+        else if (targetGO.CompareTag("EnemyPlayer"))//if attacker is card BUT target is player
+        {
+            if (hasAuthority)//I am doing the attac so my opponent takes damage
+            {
+                GameManager.Instance.enemyPortrait.GetComponent<PlayerPortrait>().TakeDamage(attackerInfo.attack);
+                //target.GetComponent<PlayerPortrait>().SetHealth(target.GetComponent<PlayerPortrait>().GetHealth() - attacker.GetComponent<CardDisplay>().GetAttack());
+                if (targetGO.GetComponent<PlayerPortrait>().GetHealth() > 0) return;
+                Debug.Log("I WON");
+                GameManager.Instance.ChangeGameState(GameManager.GameState.EndGame);
+                GameManager.Instance.WonGame();
+            }
+            else//I am receiving the attack so I have to take damage
+            {
+                GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().TakeDamage(attackerInfo.attack);
+                //GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().SetHealth(GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().GetHealth()- attacker.GetComponent<CardDisplay>().GetAttack());
 
-                    if (target.GetComponent<PlayerPortrait>().GetHealth() <= 0)
-                    {
-                        Debug.Log("I WON");
-                        GameManager.Instance.ChangeGameState(GameManager.GameState.EndGame);
-                        GameManager.Instance.WonGame();
-                    }
-                }
-                else//I am receiving the attack so I have to take damage
-                {
-                    GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().TakeDamage(attacker.GetComponent<CardDisplay>().GetAttack());
-                    //GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().SetHealth(GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().GetHealth()- attacker.GetComponent<CardDisplay>().GetAttack());
-
-                    if (GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().GetHealth() <= 0)
-                    {
-                        Debug.Log("I Lost :(");
-                        GameManager.Instance.ChangeGameState(GameManager.GameState.EndGame);
-                        GameManager.Instance.LostGame();
-                    }
-                }
+                if (GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().GetHealth() > 0) return;
+                Debug.Log("I Lost :(");
+                GameManager.Instance.ChangeGameState(GameManager.GameState.EndGame);
+                GameManager.Instance.LostGame();
             }
         }
     }

@@ -63,7 +63,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         le.flexibleHeight = 0;
 
         placeholder.transform.SetSiblingIndex(this.transform.GetSiblingIndex());
-
         //Debug.Log("placeholder name in draggable is " + placeholder.name);
         parentToReturnTo = this.transform.parent;
         placeholderParent = parentToReturnTo;
@@ -115,7 +114,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         if (!isDraggable) return;
         //isDragging = false;
-
         //PlayerManager.CmdSpawnPreview(gameObject.GetComponent<CardDisplay>().card.id, placeholderParent);
         if (placeholder.transform.parent == tabletop.transform && GameManager.Instance.currentMana >= gameObject.GetComponent<CardDisplay>().card.cost)
         { //here i want to play the card
@@ -123,9 +121,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             {
                 isDraggable = false;
                 GameManager.Instance.currentMana -= gameObject.GetComponent<CardDisplay>().card.cost;
+
                 this.transform.SetParent(parentToReturnTo);
                 this.transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
-                PlayerManager.PlayCard(gameObject, placeholder.transform.parent, newSiblingIndex);
+                PlayerManager.PlayCard( gameObject, "tabletop", newSiblingIndex);
             }
             else //if board IS full, return it to my hand
             {
@@ -136,9 +135,10 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         }
         else if (placeholder.transform.parent == hand.transform)
         { //here i move the card in my hand
+           
             this.transform.SetParent(parentToReturnTo);
             this.transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
-            PlayerManager.CmdPlayCard(gameObject, placeholder.transform.parent, newSiblingIndex);
+            //PlayerManager.PlayCard(gameObject, "hand", newSiblingIndex);
         }
         else //here i return the card to my hand (THOUGHT: possibly because out of mana?)
         {
@@ -179,7 +179,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         }
         else if (GameManager.Instance.currentBattlePhase == GameManager.BattlePhase.Selected)
         {
-            if ((gameObject.transform.parent == enemytabletop.transform || gameObject.tag == "EnemyPlayer") && PlayerManager.isMyTurn)
+            if ((gameObject.transform.parent == enemytabletop.transform || gameObject.CompareTag("EnemyPlayer")) && PlayerManager.isMyTurn)
             {//if u have already selected your minion AND you select an enemy minion OR heroe, you attack here             
                 Debug.Log("BOOOM");
 
@@ -195,7 +195,21 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
                 GameManager.Instance.minionSelected.GetComponent<Draggable>().canAttack = false;
 
-                PlayerManager.CmdApplyDamage(GameManager.Instance.minionSelected, gameObject);
+                CardInfo attackerInfo =
+                    new CardInfo(GameManager.Instance.minionSelected.GetComponent<CardDisplay>().card.id);
+                CardInfo targetInfo = null;
+                string targetType;
+                if (gameObject.CompareTag("Card")) //The target is a card
+                {
+                    targetInfo = new CardInfo(gameObject.GetComponent<CardDisplay>().card.id);
+                    targetType = "Card";
+                }
+                else//The target is a player
+                {
+                    targetType = "Player";
+                }
+    
+                PlayerManager.CmdApplyDamage(attackerInfo, targetInfo, GameManager.Instance.minionSelected.transform.GetSiblingIndex(), gameObject.transform.GetSiblingIndex(), targetType);
 
                 enemyHighlighted = null;
                 GameManager.Instance.minionSelected = null;

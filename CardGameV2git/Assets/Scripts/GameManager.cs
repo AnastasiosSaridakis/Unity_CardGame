@@ -138,6 +138,12 @@ public class GameManager : MonoBehaviour
 
             if (playerManager.isMyTurn)//here do things when my turn or enemies turn starts 
             {
+                if (currentMana == 0)
+                {
+                    currentMana++;
+                    maxMana++;
+                    ReloadText();
+                }
                 endTurnButton.interactable = true;
                // Debug.Log("playerManager.isMyTurn");
                 for (int i = tabletop.transform.childCount - 1; i >= 0; --i)//Set all played minions canAttack to true
@@ -156,6 +162,11 @@ public class GameManager : MonoBehaviour
             }
             else
             {
+                if (currentMana == 0)
+                {
+                    playerDeck.Draw();
+                    Debug.Log($"Drawing an extra card because im not first!...");
+                }
                 endTurnButton.interactable = false;
                 Debug.Log("playerManager.!isMyTurn");
                 for (int i = tabletop.transform.childCount - 1; i >= 0; --i)//Set all played minions canAttack to false
@@ -225,6 +236,8 @@ public class GameManager : MonoBehaviour
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
         playerManager = networkIdentity.GetComponent<PlayerManager>();
 
+        playerManager.EmptyHandList();
+        
         for (int i = mulliganPanel.transform.childCount - 1; i >= 0; --i)
         {
             Transform child = mulliganPanel.transform.GetChild(i);
