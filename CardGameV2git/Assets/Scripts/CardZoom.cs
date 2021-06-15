@@ -22,6 +22,9 @@ public class CardZoom : MonoBehaviour
     {
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
         PlayerManager = networkIdentity.GetComponent<PlayerManager>();
+
+        if (PlayerManager == null)
+            return;
         
         if (gameObject.transform.position.y+this.GetComponent<RectTransform>().sizeDelta.y * 2>Screen.height)
         {
@@ -56,6 +59,7 @@ public class CardZoom : MonoBehaviour
 
     public void OnHoverExit()
     {
-        Destroy(zoomCard);
+        if (zoomCard!=null)
+            Destroy(zoomCard);
     }
 }

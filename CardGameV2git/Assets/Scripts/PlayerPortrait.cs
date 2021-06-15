@@ -21,7 +21,7 @@ public class PlayerPortrait : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        health = health - damage;
+        health -= damage;
         healthText.SetText(health.ToString());
     }
 

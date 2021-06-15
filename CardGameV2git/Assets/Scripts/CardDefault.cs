@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,8 +12,11 @@ public class CardDefault : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public int cardID, availability = 3, cost;
     public string cardName;
     public bool thingsToUpdate = false;
-    
-    
+
+    private void Start()
+    {
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         cloneCard = Instantiate(this.gameObject, this.gameObject.transform.parent.parent.parent);
@@ -22,7 +26,13 @@ public class CardDefault : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         if (cloneCard == null)
             return;
-        cloneCard.transform.position = eventData.position;
+        
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        cloneCard.transform.position = new Vector3(ray.origin.x, ray.origin.y, 1);
+        
+        /*Vector2 pos;      //THIS IS AN ALTERNATIVE OF THE TWO ROWS ABOVE
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition, canvas.worldCamera, out pos);
+        cloneCard.transform.position = canvas.transform.TransformPoint(pos);*/
     }
 
     public void OnEndDrag(PointerEventData eventData)

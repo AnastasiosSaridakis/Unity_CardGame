@@ -39,7 +39,7 @@ public class DataBridge : MonoBehaviour
     private void Start()
     {
         databaseReference = FirebaseDatabase.GetInstance(DATA_URL).RootReference;
-        LoadData();
+        //LoadData();
     }
 
     public void SaveData(Deck data, string deckNumber)
@@ -134,7 +134,7 @@ public class DataBridge : MonoBehaviour
                         //print("Username of p is: " + extractedData.Username);
                         //print("pid of p is: " + extractedData.Pid);
 
-                        UIManager.Instance.SetUsername(extractedData.Username);
+                        DeckManager.Instance.SetUsername(extractedData.Username);
 
                         //string t2 = child.Child("Decks").GetRawJsonValue();
                         //Deck extractedData2 = JsonUtility.FromJson<Deck>(t2);

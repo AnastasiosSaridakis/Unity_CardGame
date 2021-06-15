@@ -30,6 +30,7 @@ public class PlayerManager : NetworkBehaviour
     [Header("In-match")] 
     [SyncVar] public bool isMyTurn = false;
     [SyncVar] public int diceRoll;
+    [SyncVar] public int turn;
     [SerializeField] private List<GameObject> handList;
     [SerializeField] private List<GameObject> tabletopList;
     
@@ -189,7 +190,6 @@ public class PlayerManager : NetworkBehaviour
     {
         handList.Clear();
     }
-    
 
     public void PlayCard( GameObject cardObject, string placeholderParent, int index)
     {
@@ -273,47 +273,6 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [Command]
-    public void CmdShuffle()
-    {
-        //for (int i = 0; i < deck.Count; i++)
-        //{
-        //    int randomIndex = Random.Range(i, deck.Count);
-        //    tempCard = deck[i];
-        //    deck[i] = deck[randomIndex];
-        //    deck[randomIndex] = tempCard;
-        //}
-    }
-    
-    [Command]
-    public void CmdReturnCardsToDeck()
-    {
-
-    }
-
-    public void CmdZoomCard(GameObject cardToZoom, float posX, float posY, Quaternion rot)
-    {
-
-        zoomCard = Instantiate(cardPrefab, new Vector3(posX, posY), rot, hand.transform.parent);
-        zoomCard.GetComponent<CardDisplay>().CopyStats(cardToZoom.GetComponent<CardDisplay>().card);
-        //zoomCard.GetComponent<CardDisplay>().card = cardToZoom.GetComponent<CardDisplay>().card;
-        zoomCard.GetComponent<CardDisplay>().setHealth(cardToZoom.GetComponent<CardDisplay>().GetHealth());
-        // Debug.Log("zoomcard health: " + zoomCard.GetComponent<CardDisplay>().GetHealth());
-        // Debug.Log("card to zoom gethealth: " + cardToZoom.GetComponent<CardDisplay>().GetHealth());
-        //zoomCard.GetComponent<CardDisplay>().setAttack(cardToZoom.GetComponent<CardDisplay>().GetAttack());
-        //NetworkServer.Spawn(zoomCard, connectionToClient);
-        //Debug.Log(zoomCard.name);
-        zoomCard.layer = LayerMask.NameToLayer("Zoom");
-        TargetZoomCard(connectionToClient, zoomCard);
-
-    }
-
-    public void CmdDestroyZoomCard()
-    {
-       // Debug.Log("CmdDestroyZoomCard " + zoomCard.name);
-        Destroy(zoomCard);
-    }
-
-    [Command]
     public void CmdPlayCard(CardInfo info,string placeholderParent,int index)
     {
         RpcPlayCard(info, placeholderParent, index);
@@ -346,7 +305,8 @@ public class PlayerManager : NetworkBehaviour
     [Command]
     public void CmdChangeTurn()
     {
-        RpcChangeTurn();
+        turn++;
+        RpcChangeTurn(turn);
     }
 
     [Command]
@@ -415,7 +375,7 @@ public class PlayerManager : NetworkBehaviour
                 GameObject card = Instantiate(cardPrefab, enemytabletop.transform, false);
                 card.GetComponent<CardDisplay>().InitializeStats(info);
                 card.GetComponent<CanvasGroup>().blocksRaycasts = true;
-                card.transform.Rotate(0f, 0f, 180f);
+               // card.transform.Rotate(0f, 0f, 180f);
                 card.transform.SetSiblingIndex(index);
                 //card.GetComponent<CardDisplay>().FlipCard();
                 if(enemyHand.transform.GetChild(0).gameObject != null)
@@ -518,11 +478,11 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcChangeTurn()
+    void RpcChangeTurn(int turn)
     {
+        GameManager.Instance.turnNumber++;
         PlayerManager pm = NetworkClient.connection.identity.GetComponent<PlayerManager>();
         pm.isMyTurn = !(pm.isMyTurn);
-
         if (GameManager.Instance == null) return;
         //GameManager.Instance.currentGameState = GameManager.GameState.PlayerTurn;
         GameManager.Instance.ChangeGameState(GameManager.GameState.PlayerTurn);
@@ -536,18 +496,19 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcApplyDamage(CardInfo attackerInfo, CardInfo targetInfo, int attackerIndex, int targetIndex, string targetType)
+    public void RpcApplyDamage(CardInfo attackerInfo, CardInfo targetInfo, int firstIndex, int secondIndex, string targetType)
     {
         GameObject attackerGO, targetGO = null;
-        if (isMyTurn)
-        {
-            attackerGO = tabletop.transform.GetChild(attackerIndex).gameObject;
-            targetGO = targetType.Equals("Card") ? enemytabletop.transform.GetChild(targetIndex).gameObject : GameManager.Instance.enemyPortrait;
+        if (hasAuthority)
+        {Debug.Log("FIrst if yes authority");
+            attackerGO = tabletop.transform.GetChild(firstIndex).gameObject;
+            targetGO = targetType.Equals("Card") ? enemytabletop.transform.GetChild(secondIndex).gameObject : GameManager.Instance.enemyPortrait;
         }
         else
         {
-             attackerGO = enemytabletop.transform.GetChild(attackerIndex).gameObject;
-             targetGO = targetType.Equals("Card") ? tabletop.transform.GetChild(targetIndex).gameObject : GameManager.Instance.playerPortrait;
+            Debug.Log("FIrst if no authority");
+             attackerGO = enemytabletop.transform.GetChild(firstIndex).gameObject;
+             targetGO = targetType.Equals("Card") ? tabletop.transform.GetChild(secondIndex).gameObject : GameManager.Instance.playerPortrait;
         }
 
         if (attackerGO == null || targetGO == null)
@@ -556,7 +517,7 @@ public class PlayerManager : NetworkBehaviour
             return;
         }
         
-        if (!attackerGO.CompareTag("Card")) return;
+        //if (!attackerGO.CompareTag("Card")) return;
         //Animator anim2 = attacker.GetComponent<Animator>();
         //anim2.SetBool("isAttacking", true);
         //anim2.SetBool("isAttacking", false);
@@ -567,12 +528,14 @@ public class PlayerManager : NetworkBehaviour
             //    Debug.Log("target damage is: " + target.GetComponent<CardDisplay>().GetAttack());
             //    Debug.Log("attacker health is is: " + attacker.GetComponent<CardDisplay>().GetHealth());
             //    Debug.Log("target health is is: " + target.GetComponent<CardDisplay>().GetHealth());
-                
+            Debug.Log($"<color=yellow>{targetGO.GetComponent<CardDisplay>().nameText.text} remaining health is {targetInfo.health - attackerInfo.attack}</color>");    
             targetGO.GetComponent<CardDisplay>().setHealth(targetInfo.health - attackerInfo.attack);
+            targetInfo.health = targetGO.GetComponent<CardDisplay>().GetHealth();
             //Animator anim1 = target.GetComponent<Animator>();
             //anim1.SetBool("isAttacking", true);
-
+            Debug.Log($"<color=yellow>{attackerGO.GetComponent<CardDisplay>().nameText.text} remaining health is {attackerInfo.health - targetInfo.attack}</color>");    
             attackerGO.GetComponent<CardDisplay>().setHealth(attackerInfo.health - targetInfo.attack);
+            attackerInfo.health= attackerGO.GetComponent<CardDisplay>().GetHealth();
                 
 
                 
@@ -601,9 +564,9 @@ public class PlayerManager : NetworkBehaviour
                     targetGO.GetComponent<CardZoom>().zoomCard.GetComponent<CardDisplay>().setHealth(targetInfo.health);
             }
         }
-        else if (targetGO.CompareTag("EnemyPlayer"))//if attacker is card BUT target is player
+        else if (targetGO.CompareTag("EnemyPlayer") || targetGO.CompareTag("Player"))//if attacker is card BUT target is player
         {
-            if (hasAuthority)//I am doing the attac so my opponent takes damage
+            if (hasAuthority)//I am doing the attack so my opponent takes damage
             {
                 GameManager.Instance.enemyPortrait.GetComponent<PlayerPortrait>().TakeDamage(attackerInfo.attack);
                 //target.GetComponent<PlayerPortrait>().SetHealth(target.GetComponent<PlayerPortrait>().GetHealth() - attacker.GetComponent<CardDisplay>().GetAttack());
@@ -617,7 +580,7 @@ public class PlayerManager : NetworkBehaviour
                 GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().TakeDamage(attackerInfo.attack);
                 //GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().SetHealth(GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().GetHealth()- attacker.GetComponent<CardDisplay>().GetAttack());
 
-                if (GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().GetHealth() > 0) return;
+                if (targetGO.GetComponent<PlayerPortrait>().GetHealth() > 0) return;
                 Debug.Log("I Lost :(");
                 GameManager.Instance.ChangeGameState(GameManager.GameState.EndGame);
                 GameManager.Instance.LostGame();

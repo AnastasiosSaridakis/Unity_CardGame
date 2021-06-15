@@ -122,7 +122,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
                 isDraggable = false;
                 GameManager.Instance.currentMana -= gameObject.GetComponent<CardDisplay>().card.cost;
 
-                this.transform.SetParent(parentToReturnTo);
+                this.transform.SetParent(tabletop.transform);
                 this.transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
                 PlayerManager.PlayCard( gameObject, "tabletop", newSiblingIndex);
             }
@@ -180,8 +180,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         else if (GameManager.Instance.currentBattlePhase == GameManager.BattlePhase.Selected)
         {
             if ((gameObject.transform.parent == enemytabletop.transform || gameObject.CompareTag("EnemyPlayer")) && PlayerManager.isMyTurn)
-            {//if u have already selected your minion AND you select an enemy minion OR heroe, you attack here             
-                Debug.Log("BOOOM");
+            {//if u have already selected your minion AND you select an enemy minion OR heroe, you attack here     
 
                 //Color c = GameManager.Instance.minionSelected.GetComponent<Image>().color;//de-highlight your minion
                 //c.a = 0;
@@ -197,19 +196,24 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
                 CardInfo attackerInfo =
                     new CardInfo(GameManager.Instance.minionSelected.GetComponent<CardDisplay>().card.id);
+                attackerInfo.SetStats(GameManager.Instance.minionSelected.GetComponent<CardDisplay>());
                 CardInfo targetInfo = null;
                 string targetType;
                 if (gameObject.CompareTag("Card")) //The target is a card
                 {
                     targetInfo = new CardInfo(gameObject.GetComponent<CardDisplay>().card.id);
+                    targetInfo.SetStats(gameObject.GetComponent<CardDisplay>());
                     targetType = "Card";
                 }
                 else//The target is a player
                 {
                     targetType = "Player";
                 }
-    
-                PlayerManager.CmdApplyDamage(attackerInfo, targetInfo, GameManager.Instance.minionSelected.transform.GetSiblingIndex(), gameObject.transform.GetSiblingIndex(), targetType);
+
+                int attackerIndex = GameManager.Instance.minionSelected.transform.GetSiblingIndex();
+                int targetIndex = gameObject.transform.GetSiblingIndex();
+                //Debug.Log($"<color=green>attacker info is: {attackerInfo.name} | target info is: {targetInfo.name} -- attackerIndex: {attackerIndex} | target: {targetIndex} </color>");
+                PlayerManager.CmdApplyDamage(attackerInfo, targetInfo, attackerIndex, targetIndex, targetType);
 
                 enemyHighlighted = null;
                 GameManager.Instance.minionSelected = null;

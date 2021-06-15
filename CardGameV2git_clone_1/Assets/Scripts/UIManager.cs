@@ -16,8 +16,6 @@ public class UIManager : MonoBehaviour
     public GameObject OptionsPanel;
     public GameObject currentDeckPanel;
     public TextMeshProUGUI connectedText;
-    public string username;
-    private bool dataToLoad = false;
     public GameObject deckPrefab;
     public GameObject deckPrefab2;
     public GameObject listOfDecks;
@@ -29,6 +27,10 @@ public class UIManager : MonoBehaviour
     public GameObject ReadToPlayPanel;
     public GameObject ReadToPlayList;
     public GameObject PlayButton;
+    [Header("DeckManager")]
+     public Button previousPageBtn, nextPageBtn;
+     public TextMeshProUGUI pageNumberTxt,cardsInDeckTxt,exitDialogTxt;
+     public TMP_InputField deckTitle;
 
     
     
@@ -48,22 +50,12 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
        // FindObjectOfType<AudioManager>().Play("Title Music");
+       DeckManager.Instance.dataToLoad = true;
     }
 
     private void Update()
     {
-        if (dataToLoad)
-        {
-            connectedText.SetText("Connected as: " + username);
-            dataToLoad = false;
-            //Debug.Log("im in update");
-        }
-    }
-
-    public void SetUsername(string uname)
-    {
-        username = uname;
-        dataToLoad = true;
+        
     }
 
     public void LoadDecks()
@@ -141,5 +133,32 @@ public class UIManager : MonoBehaviour
     public void LoadGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    public void SaveDeck()
+    {
+        DeckManager.Instance.SaveDeck();
+    }
+    public void AddDeck()
+    {
+        DeckManager.Instance.AddDeck();
+    }
+
+    public void ExitDialog()
+    {
+        DeckManager.Instance.ExitDialog();
+    }
+
+    public void CheckDeckName()
+    {
+        DeckManager.Instance.CheckDeckName();
+    }   
+    public void GoToNextPage()
+    {
+        DeckManager.Instance.GoToNextPage();
+    }   
+    public void GoToPreviousPage()
+    {
+        DeckManager.Instance.GoToPreviousPage();
     }
 }

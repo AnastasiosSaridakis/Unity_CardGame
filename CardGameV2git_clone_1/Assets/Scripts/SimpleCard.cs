@@ -11,10 +11,11 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
     public TextMeshProUGUI cardName, cardMana;
     GameObject zoomCard;
     Card originalCard;
+    private Canvas canvas;
 
-    void Start()
+    private void Start()
     {
-        
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
     }
 
     // Update is called once per frame
@@ -40,9 +41,17 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
         if (zoomCard != null)
             Destroy(zoomCard);
 
-        Vector3 cardPos = transform.position + Vector3.right * GetComponent<RectTransform>().rect.width;
-        zoomCard = Instantiate(UIManager.Instance.defaultCard, cardPos, Quaternion.identity);
-        zoomCard.transform.SetParent(transform.parent.parent.parent);
+       
+        /*Vector3 cardPos = transform.position + Vector3.right * GetComponent<RectTransform>().rect.width;
+        cardPos = cardPos + Vector3.down * Screen.height / 2;
+        //RectTransformUtility.WorldToScreenPoint(Camera.main, gameObject.transform.position)*/
+
+        Vector3 position = Camera.main.WorldToScreenPoint(transform.position);
+        Vector3 pos2 = WorldToScreenSpace(transform.position, Camera.main, transform.parent.parent.GetComponent<RectTransform>());
+        pos2 = pos2 + Vector3.right * GetComponent<RectTransform>().rect.width;
+        
+        zoomCard = Instantiate(UIManager.Instance.defaultCard, pos2, Quaternion.identity);
+        zoomCard.transform.SetParent(transform.parent.parent.parent,false);
         zoomCard.GetComponent<CanvasGroup>().blocksRaycasts = false;
         foreach (Card card in CardDatabase.Instance.cardList)
         {
@@ -75,7 +84,13 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = eventData.position;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        transform.position = new Vector3(ray.origin.x, ray.origin.y, 1);
+        
+        /*Vector2 pos; /THIS IS AN ALTERNATIVE OF THE TWO ROWS ABOVE
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition, canvas.worldCamera, out pos);
+        transform.position = canvas.transform.TransformPoint(pos);*/
+        //transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -116,6 +131,19 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
         }
         DeckManager.Instance.OrderCurrentDeck();
         DeckManager.Instance.isDragging = false;
+    }
+    public static Vector3 WorldToScreenSpace(Vector3 worldPos, Camera cam, RectTransform area)
+    {
+        Vector3 screenPoint = cam.WorldToScreenPoint(worldPos);
+        screenPoint.z = 0;
+ 
+        Vector2 screenPos;
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(area, screenPoint, cam, out screenPos))
+        {
+            return screenPos;
+        }
+ 
+        return screenPoint;
     }
 
 }

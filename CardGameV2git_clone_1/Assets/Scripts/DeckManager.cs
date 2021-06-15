@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,9 +11,9 @@ public class DeckManager : MonoBehaviour
     private static DeckManager _instance;
     public static DeckManager Instance { get { return _instance; } }
 
-    public Button previousPageBtn, nextPageBtn;
+    /*public Button previousPageBtn, nextPageBtn;
     public TextMeshProUGUI pageNumberTxt,cardsInDeckTxt,exitDialogTxt;
-    public TMP_InputField deckTitle;
+    public TMP_InputField deckTitle;*/
     string deckName;
     
     public int currentPageNumber, totalNumberOfPages;
@@ -25,6 +26,8 @@ public class DeckManager : MonoBehaviour
     public int currentCardsInDeck;
     bool isNewDeck = false;
     public List<SimpleCard> currentDeckList;
+    public string username;
+    public bool dataToLoad = false;
 
     public int SelectedDeckToPlay;
 
@@ -43,23 +46,39 @@ public class DeckManager : MonoBehaviour
 
     public void Start()
     {
+        DataBridge.Instance.LoadData();
+    }
 
+    public void Update()
+    {
+        if (dataToLoad)
+        {
+            UIManager.Instance.connectedText.SetText("Connected as: " + username);
+            dataToLoad = false;
+            //Debug.Log("im in update");
+        }
+    }
+
+    public void SetUsername(string uname)
+    {
+        username = uname;
+        dataToLoad = true;
     }
     public void GoToPreviousPage()
     {
         currentPageNumber--;
-        pageNumberTxt.SetText(currentPageNumber + "/" + totalNumberOfPages);
+        UIManager.Instance.pageNumberTxt.SetText(currentPageNumber + "/" + totalNumberOfPages);
         if (currentPageNumber == 1)
         {
-            previousPageBtn.interactable = false;
+            UIManager.Instance.previousPageBtn.interactable = false;
         }
         if(currentPageNumber == totalNumberOfPages)
         {
-            nextPageBtn.interactable = false;
+            UIManager.Instance.nextPageBtn.interactable = false;
         }
         else
         {
-            nextPageBtn.interactable = true;
+            UIManager.Instance.nextPageBtn.interactable = true;
         }
         LoadPage();
     }
@@ -67,18 +86,18 @@ public class DeckManager : MonoBehaviour
     public void GoToNextPage()
     {
         currentPageNumber++;
-        pageNumberTxt.SetText(currentPageNumber + "/" + totalNumberOfPages);
+        UIManager.Instance.pageNumberTxt.SetText(currentPageNumber + "/" + totalNumberOfPages);
         if (currentPageNumber == totalNumberOfPages)
         {
-            nextPageBtn.interactable = false;
+            UIManager.Instance.nextPageBtn.interactable = false;
         }
         else
         {
-            nextPageBtn.interactable = true;
+            UIManager.Instance.nextPageBtn.interactable = true;
         }
         if(currentPageNumber > 1)
         {
-            previousPageBtn.interactable = true;
+            UIManager.Instance.previousPageBtn.interactable = true;
         }
         LoadPage();
     }
@@ -86,18 +105,18 @@ public class DeckManager : MonoBehaviour
     public void LoadCardManager()
     {
         currentCardsInDeck = currentSelectedDeck.PlayerDeck.Count;
-        cardsInDeckTxt.SetText(currentCardsInDeck + "/30");
-        cardsInDeckTxt.color = Color.white;
+        UIManager.Instance.cardsInDeckTxt.SetText(currentCardsInDeck + "/30");
+        UIManager.Instance.cardsInDeckTxt.color = Color.white;
         currentPageNumber = 1;
         totalNumberOfPages = CardDatabase.Instance.cardList.Count / 10;// MAKE THE CARDDATABASE TO START FROM HERE AND BE PRESERVED THROUGH SCENES
         if (CardDatabase.Instance.cardList.Count % 10 != 0)
         {
             totalNumberOfPages++;
         }
-        pageNumberTxt.SetText(currentPageNumber + "/" + totalNumberOfPages);
+        UIManager.Instance.pageNumberTxt.SetText(currentPageNumber + "/" + totalNumberOfPages);
         if(totalNumberOfPages == 1)
-            nextPageBtn.interactable = false;
-        deckTitle.text = currentSelectedDeck.DeckName;
+            UIManager.Instance.nextPageBtn.interactable = false;
+        UIManager.Instance.deckTitle.text = currentSelectedDeck.DeckName;
         //foreach (Card card in CardDatabase.Instance.cardList)
         //foreach (int cardID in PlayerDeckList[currentSelectedDeckNum].PlayerDeck)
         foreach (int cardID in currentSelectedDeck.PlayerDeck)
@@ -140,11 +159,11 @@ public class DeckManager : MonoBehaviour
 
     public void RefreshText()
     {
-        cardsInDeckTxt.SetText(currentCardsInDeck + "/30");
+        UIManager.Instance.cardsInDeckTxt.SetText(currentCardsInDeck + "/30");
         if (currentCardsInDeck > 30)
-            cardsInDeckTxt.color = Color.red;
+            UIManager.Instance.cardsInDeckTxt.color = Color.red;
         else
-            cardsInDeckTxt.color = Color.white;
+            UIManager.Instance.cardsInDeckTxt.color = Color.white;
     }
 
     public void LoadPage()
@@ -187,15 +206,15 @@ public class DeckManager : MonoBehaviour
     {
         if(currentCardsInDeck > 30)
         {
-            exitDialogTxt.SetText("You have more than 30 cards in your current deck. If you exit now, your deck will NOT be saved. Continue?");
+            UIManager.Instance.exitDialogTxt.SetText("You have more than 30 cards in your current deck. If you exit now, your deck will NOT be saved. Continue?");
         }
         else if(currentCardsInDeck<30)
         {
-            exitDialogTxt.SetText("You have less than 30 cards in your current deck. If you exit now, your deck will NOT be saved. Continue?");
+            UIManager.Instance.exitDialogTxt.SetText("You have less than 30 cards in your current deck. If you exit now, your deck will NOT be saved. Continue?");
         }
         else
         {
-            exitDialogTxt.SetText("If you exit now, your deck will be saved. Continue?");
+            UIManager.Instance.exitDialogTxt.SetText("If you exit now, your deck will be saved. Continue?");
         }
     }
 
@@ -229,13 +248,13 @@ public class DeckManager : MonoBehaviour
 
     public void CheckDeckName()
     {
-        if(deckTitle.text.Length >= 20)
+        if(UIManager.Instance.deckTitle.text.Length >= 20)
         {
-            deckTitle.text = deckName;
+            UIManager.Instance.deckTitle.text = deckName;
         }
         else
         {
-            deckName = deckTitle.text;
+            deckName = UIManager.Instance.deckTitle.text;
         }
     }
 

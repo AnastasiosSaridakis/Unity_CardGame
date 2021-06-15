@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1875288740}
   m_Layer: 0
   m_Name: NetworkManager
-  m_TagString: Untagged
+  m_TagString: NetworkManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68,7 +68,6 @@ MonoBehaviour:
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 4249160492522275573, guid: 50c5027a2dc202b41b5fd7fb3172ec88, type: 3}
-  - {fileID: 5543304980699131396, guid: e06fd87e825eef440b00fb1fc5c2e011, type: 3}
 --- !u!114 &1308741396539556044
 MonoBehaviour:
   m_ObjectHideFlags: 0

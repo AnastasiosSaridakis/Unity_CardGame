@@ -12,7 +12,18 @@ public class CardInfo
     public int cost;
     public int attack;
     public int health;
+    public string name;
+    public string description;
 
+    public void SetStats(CardDisplay cd)
+    {
+        cost = int.Parse(cd.manaText.text);
+        attack = int.Parse(cd.attackText.text);
+        health =int.Parse(cd.healthText.text);
+        name = cd.nameText.text;
+        description = cd.descriptionText.text;
+    }
+    
     public CardInfo(int id)
     {
         foreach (var card in CardDatabase.Instance.cardList.Where(card => card.id == id))
@@ -21,6 +32,8 @@ public class CardInfo
             cost = card.cost;
             attack = card.attack;
             health = card.health;
+            name = card.cardname;
+            description = card.description;
         }
     }
 
@@ -87,10 +100,10 @@ public class CardDisplay : MonoBehaviour
         manaText.text = info.cost.ToString();
         healthText.text = info.health.ToString();
         attackText.text = info.attack.ToString();
+        nameText.text = info.name;
+        descriptionText.text = info.description;
         foreach (var _card in CardDatabase.Instance.cardList.Where(_card => _card.id == info.id))
         {
-            nameText.text = _card.cardname;
-            descriptionText.text = _card.description;
             artworkImage.sprite = _card.artworkImage;
             this.card = _card;
         }

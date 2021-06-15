@@ -20,6 +20,11 @@ public class AutoHostClient : MonoBehaviour
       {
          Debug.Log("=-=-=-=Server Starting=-=-=-=");
       }
+
+      if (networkManager == null)
+      {
+         networkManager = GameObject.FindWithTag("NetworkManager").GetComponent<NetworkManager>();
+      }
    }
 
    public void JoinServer()

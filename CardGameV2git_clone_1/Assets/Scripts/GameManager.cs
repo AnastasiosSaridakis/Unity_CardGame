@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
     public Material greenFlame;
     public Material redFlame;
     public Material blueFlame;
+    public int turnNumber;
     private bool DebugMode; //I AM USELESS PLZ REMOVE ME
 
     void Awake()
@@ -88,7 +89,7 @@ public class GameManager : MonoBehaviour
     {
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
         playerManager = networkIdentity.GetComponent<PlayerManager>();
-
+        
         playerManager.CmdChangeTurn();
     }
 
@@ -126,8 +127,8 @@ public class GameManager : MonoBehaviour
         }
         else if (gameState == GameState.PlayerTurn)
         {
-            Debug.Log("2");
-            Debug.Log("gameState == GameState.PlayerTurn");
+            /*Debug.Log("2");
+            Debug.Log("gameState == GameState.PlayerTurn");*/
             NetworkIdentity networkIdentity = NetworkClient.connection.identity;
             playerManager = networkIdentity.GetComponent<PlayerManager>();
 
@@ -138,7 +139,7 @@ public class GameManager : MonoBehaviour
 
             if (playerManager.isMyTurn)//here do things when my turn or enemies turn starts 
             {
-                if (currentMana == 0)
+                if (turnNumber == 0)
                 {
                     currentMana++;
                     maxMana++;
@@ -162,13 +163,13 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                if (currentMana == 0)
+                if (turnNumber == 0)
                 {
                     playerDeck.Draw();
                     Debug.Log($"Drawing an extra card because im not first!...");
                 }
                 endTurnButton.interactable = false;
-                Debug.Log("playerManager.!isMyTurn");
+                //Debug.Log("playerManager.!isMyTurn");
                 for (int i = tabletop.transform.childCount - 1; i >= 0; --i)//Set all played minions canAttack to false
                 {
                     Transform child = tabletop.transform.GetChild(i);

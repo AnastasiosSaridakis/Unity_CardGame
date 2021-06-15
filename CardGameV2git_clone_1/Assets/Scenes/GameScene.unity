@@ -299,6 +299,11 @@ PrefabInstance:
       objectReference: {fileID: 4377074931618684563}
     - target: {fileID: 8509859911040049769, guid: 72e0a124bfb60a245baee8eea6633541,
         type: 3}
+      propertyPath: endGamePanel
+      value: 
+      objectReference: {fileID: 352404105312471106}
+    - target: {fileID: 8509859911040049769, guid: 72e0a124bfb60a245baee8eea6633541,
+        type: 3}
       propertyPath: enemyPortrait
       value: 
       objectReference: {fileID: 7953981536137729011}
@@ -2893,7 +2898,7 @@ PrefabInstance:
     - target: {fileID: 7895508698256224904, guid: 4170bdb9effeeb0498d174d2cd199c42,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7895508698256224904, guid: 4170bdb9effeeb0498d174d2cd199c42,
         type: 3}
@@ -2908,7 +2913,7 @@ PrefabInstance:
     - target: {fileID: 7895508698256224904, guid: 4170bdb9effeeb0498d174d2cd199c42,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7895508698256224904, guid: 4170bdb9effeeb0498d174d2cd199c42,
         type: 3}
@@ -2933,7 +2938,7 @@ PrefabInstance:
     - target: {fileID: 7895508698256224904, guid: 4170bdb9effeeb0498d174d2cd199c42,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7895508698256224951, guid: 4170bdb9effeeb0498d174d2cd199c42,
         type: 3}
