@@ -7,7 +7,7 @@ namespace DG
 {
     using Util;
 
-    public class UIManager : Singleton<UIManager>
+    public class UIManagerTrello : Singleton<UIManagerTrello>
     {
         public bool pauseGameOnActive = true;
         [Header("UI objects")]
@@ -62,7 +62,8 @@ namespace DG
             int index = screenshotSlots.FindIndex((RawImage ri) => { return ri.texture == null; });
             if (index < 0) yield break;
 
-            canvas.enabled = false;
+            canvas.enabled = false; 
+            
 
             yield return new WaitForEndOfFrame();
             screenshotSlots[index].texture = (ScreenshotTool.TakeScreenshot());

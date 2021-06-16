@@ -807,7 +807,6 @@ public class PlayerManager : NetworkBehaviour
             Destroy(playerLobbyUI);
         }
     }
-
     #endregion
 
     #region DeckManagement 
@@ -836,5 +835,6 @@ public class PlayerManager : NetworkBehaviour
         myTurnManager.deck = myDeck;
     }#1#*/
     #endregion
+    
 }
 

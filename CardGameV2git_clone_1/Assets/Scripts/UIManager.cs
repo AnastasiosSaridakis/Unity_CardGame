@@ -135,6 +135,11 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
+    public void ButtonClickedSound()
+    {
+        AudioManager.instance.Play("button");
+    }
+
     public void SaveDeck()
     {
         DeckManager.Instance.SaveDeck();

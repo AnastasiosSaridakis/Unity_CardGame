@@ -183,4 +183,9 @@ public class UILobby : MonoBehaviour
         lobbySelectables.ForEach(x=>x.interactable = true);
         beginGameButton.gameObject.SetActive(false);
     }
+
+    public void ButtonClickedSound()
+    {
+        AudioManager.instance.Play("button");
+    }
 }

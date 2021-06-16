@@ -297,6 +297,9 @@ public class GameManager : MonoBehaviour
     }
     public void RestartGame()
     {
-        SceneManager.LoadScene(1);
+        UILobby.Instance.DisconnectLobby();
+        NetworkManager.singleton.StopClient();
     }
+    
+    
 }

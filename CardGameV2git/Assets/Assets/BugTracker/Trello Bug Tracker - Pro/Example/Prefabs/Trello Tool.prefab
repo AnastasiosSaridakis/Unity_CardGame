@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   yourKey: 2de523a1967d4d4f51df9ac9a22a3d71
-  yourToken: '8451f0f78951bfb1f481b44ad8d3ba12e2654819e464ea5f38b9bf5bd8f4e65e '
+  yourToken: d47ebd3e960684fff0594cbbad8bab0f9772cc302038cba5d3563305c90102e3
   currentBoard: CardGame
   newCardsOnTop: 1
   reportTypes:
