@@ -7,7 +7,8 @@ using Mirror;
 public class AutoHostClient : MonoBehaviour
 {
    [SerializeField] private NetworkManager networkManager;
-   [SerializeField] private string ServerAddress;
+   [SerializeField] private LevelLoader levelLoader;
+   
 
    public void Start()
    {
@@ -38,7 +39,7 @@ public class AutoHostClient : MonoBehaviour
       {
          Debug.Log($"Connecting to {networkManager.networkAddress}");
          networkManager.StartClient();
+        // levelLoader.LoadNextLevel("Lobby");  //For animating the connectClient Transition
       }
-         
    }
 }

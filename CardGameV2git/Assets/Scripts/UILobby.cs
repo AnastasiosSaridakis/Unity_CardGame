@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ public class UILobby : MonoBehaviour
     private TMP_InputField joinMatchInput;
 
     [SerializeField] private List<Selectable> lobbySelectables = new List<Selectable>();
+    [SerializeField] private GameObject mainPanel;
     [SerializeField] 
     private GameObject playersPanel;
     [SerializeField] 
@@ -29,8 +31,10 @@ public class UILobby : MonoBehaviour
     private TMP_Text matchIDText;
     [SerializeField]
     private Button beginGameButton;
-
+    [SerializeField]
     private GameObject playerLobbyUI;
+    [SerializeField]
+    private GameObject enemyPlayerLobbyUI;
 
     private bool searching = false;
     void Awake()
@@ -73,7 +77,8 @@ public class UILobby : MonoBehaviour
     {
         if (success)
         {
-            //Debug.Log("setting canvas to true here");
+            Debug.Log("setting canvas to true here");
+            mainPanel.SetActive(false);
             playersPanel.SetActive(true);
             
             if(playerLobbyUI != null) Destroy(playerLobbyUI);
@@ -93,10 +98,12 @@ public class UILobby : MonoBehaviour
         if (success)
         {
            // Debug.Log("you joined a game!");
+            mainPanel.SetActive(false);
             playersPanel.SetActive(true);
             
             if(playerLobbyUI != null) Destroy(playerLobbyUI);
             playerLobbyUI = SpawnPlayerUIPrefab(PlayerManager.localPlayer);
+            //PlayerManager.localPlayer.showPlayersUI();
             matchIDText.text = matchID;
         }
         else
@@ -122,6 +129,7 @@ public class UILobby : MonoBehaviour
     public void SearchGame()
     {
         //Debug.Log("Searching for game!..");
+        mainPanel.SetActive(false);
         searchCanvas.SetActive(true);
         StartCoroutine(SearchingForGame());
     }
@@ -169,6 +177,7 @@ public class UILobby : MonoBehaviour
 
     public void SearchCancel()
     {
+        mainPanel.SetActive(true);
         searchCanvas.SetActive(false);
         searching = false;
         lobbySelectables.ForEach(x => x.interactable = true);
@@ -179,6 +188,7 @@ public class UILobby : MonoBehaviour
         if(playerLobbyUI != null) Destroy(playerLobbyUI);
         PlayerManager.localPlayer.DisconnectGame();
 
+        mainPanel.SetActive(true);
         playersPanel.SetActive(false);
         lobbySelectables.ForEach(x=>x.interactable = true);
         beginGameButton.gameObject.SetActive(false);
@@ -187,5 +197,10 @@ public class UILobby : MonoBehaviour
     public void ButtonClickedSound()
     {
         AudioManager.instance.Play("button");
+    }
+
+    public void DisconnectClient()
+    {
+        NetworkManager.singleton.StopClient();
     }
 }

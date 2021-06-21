@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PlayerPortrait : MonoBehaviour
 {
     public TextMeshProUGUI healthText;
+    public TMP_Text nameText;
     public int health;
     
     void Start()
@@ -23,6 +24,11 @@ public class PlayerPortrait : MonoBehaviour
     {
         health -= damage;
         healthText.SetText(health.ToString());
+    }
+
+    public void SetUsername(string username)
+    {
+        nameText.text = username;
     }
 
 

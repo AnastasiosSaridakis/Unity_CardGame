@@ -13,6 +13,6 @@ public class UIPlayer : MonoBehaviour
    public void SetPlayer(PlayerManager player)
    {
       this.player = player;
-      text.text = "Player" + player.playerIndex.ToString();
+      text.text = player.username;
    }
 }

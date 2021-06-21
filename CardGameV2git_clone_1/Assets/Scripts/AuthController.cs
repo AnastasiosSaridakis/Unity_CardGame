@@ -104,7 +104,8 @@ public class AuthController : MonoBehaviour
 
         if (LoadNextScene)
         {
-            levelLoader.GetComponent<LevelLoader>().LoadNextLevel();
+            LoadNextScene = false;
+            levelLoader.GetComponent<LevelLoader>().LoadNextLevel("MainMenu");
         }
 
         if (regSuccess)

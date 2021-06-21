@@ -672,6 +672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthText: {fileID: 2363019231568884906}
+  nameText: {fileID: 657835253771689097}
   health: 30
 --- !u!222 &9083416454663352264
 CanvasRenderer:

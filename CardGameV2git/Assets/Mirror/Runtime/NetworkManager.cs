@@ -1256,6 +1256,7 @@ namespace Mirror
         // TODO client only ever uses NetworkClient.connection. this parameter is redundant.
         public virtual void OnClientDisconnect(NetworkConnection conn)
         {
+            Debug.Log($"Im on client DC");
             StopClient();
         }
 

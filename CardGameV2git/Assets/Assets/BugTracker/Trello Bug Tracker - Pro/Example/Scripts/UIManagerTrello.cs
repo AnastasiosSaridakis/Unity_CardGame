@@ -17,6 +17,7 @@ namespace DG
         public Dropdown reportOptionsDropDown;
         public Painter painter;
         public List<RawImage> screenshotSlots;
+        public List<Image> screenshotSlotsImage;
 
         bool paused;
 

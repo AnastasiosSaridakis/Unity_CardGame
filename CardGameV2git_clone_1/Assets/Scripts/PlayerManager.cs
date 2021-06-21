@@ -27,6 +27,9 @@ public class PlayerManager : NetworkBehaviour
     public static TurnManager myTurnManager;
     [SyncVar] public string matchID;
     [SyncVar] public int playerIndex;
+    [SyncVar] public Match currentMatch;
+    [SyncVar] public string username;
+    
     [Header("In-match")] 
     [SyncVar] public bool isMyTurn = false;
     [SyncVar] public int diceRoll;
@@ -49,15 +52,22 @@ public class PlayerManager : NetworkBehaviour
         if (isLocalPlayer)
         {
             localPlayer = this;
-            //Debug.Log(("IT IS LOCAL PLAYER"));
+            localPlayer.username = DeckManager.Instance.username;
+            CmdSendUname(localPlayer,localPlayer.username);
+            Debug.Log(("IT IS LOCAL PLAYER"));
         }
         else
-        {
-            playerLobbyUI = UILobby.Instance.SpawnPlayerUIPrefab(this);
-           // Debug.Log(("NOT LOCAL PLAYER"));
+        { 
+           playerLobbyUI = UILobby.Instance.SpawnPlayerUIPrefab(this);
+           Debug.Log(("NOT LOCAL PLAYER"));
         }
     }
 
+    [Command]
+    public void CmdSendUname(PlayerManager player , string uname)
+    {
+        player.username = uname;
+    }
     public override void OnStopClient()
     {
         ClientDisconnect();
@@ -94,6 +104,14 @@ public class PlayerManager : NetworkBehaviour
                 tabletop = UIGame.Instance.tableTop;
                 enemytabletop = UIGame.Instance.enemyTableTop;
                 mulliganPanel = UIGame.Instance.mulliganPanel;
+                if (hasAuthority)
+                {
+                    UIGame.Instance.playerPortrait.GetComponent<PlayerPortrait>().SetUsername(username);
+                }
+                else
+                {
+                    UIGame.Instance.enemyPlayerPortrait.GetComponent<PlayerPortrait>().SetUsername(username);
+                }
                 //isMyTurn = true;
                 //CmdChangeTurn();
             }
@@ -454,6 +472,7 @@ public class PlayerManager : NetworkBehaviour
                     }
                 }
                 go.transform.SetParent(mulliganPanel.transform, true);
+                go.transform.localScale = new Vector3(1.6f, 1.6f, 1.6f);
                 go.GetComponent<CanvasGroup>().blocksRaycasts = false;
             }
             else
@@ -518,9 +537,8 @@ public class PlayerManager : NetworkBehaviour
         }
         
         //if (!attackerGO.CompareTag("Card")) return;
-        //Animator anim2 = attacker.GetComponent<Animator>();
-        //anim2.SetBool("isAttacking", true);
-        //anim2.SetBool("isAttacking", false);
+        Animator anim2 = attackerGO.GetComponent<Animator>();
+        anim2.SetTrigger("isAttacking");
 
         if (targetGO.CompareTag("Card") )//if both are cards, both needs to be damaged
         {
@@ -531,8 +549,8 @@ public class PlayerManager : NetworkBehaviour
             Debug.Log($"<color=yellow>{targetGO.GetComponent<CardDisplay>().nameText.text} remaining health is {targetInfo.health - attackerInfo.attack}</color>");    
             targetGO.GetComponent<CardDisplay>().setHealth(targetInfo.health - attackerInfo.attack);
             targetInfo.health = targetGO.GetComponent<CardDisplay>().GetHealth();
-            //Animator anim1 = target.GetComponent<Animator>();
-            //anim1.SetBool("isAttacking", true);
+            Animator anim1 = targetGO.GetComponent<Animator>();
+            anim1.SetTrigger("isAttacking");
             Debug.Log($"<color=yellow>{attackerGO.GetComponent<CardDisplay>().nameText.text} remaining health is {attackerInfo.health - targetInfo.attack}</color>");    
             attackerGO.GetComponent<CardDisplay>().setHealth(attackerInfo.health - targetInfo.attack);
             attackerInfo.health= attackerGO.GetComponent<CardDisplay>().GetHealth();
@@ -809,32 +827,5 @@ public class PlayerManager : NetworkBehaviour
     }
     #endregion
 
-    #region DeckManagement 
-    //not implemented right, needs rework when refactoring
-
-    /*public void GetDeck(TurnManager turnManager)
-    {
-        CmdGetDeck(turnManager);
-    }
-
-    [Command]
-    void CmdGetDeck(TurnManager turnManager)
-    {
-        Debug.Log($"hi from server. TM is {turnManager.name}");
-        foreach (var id in DeckManager.Instance.currentSelectedDeck.PlayerDeck)
-        {
-           Debug.Log($"card id is: {id}");
-        }
-
-        //TargetGetDeck();
-    }
-
-    //[TargetRpc]
-    /*void TargetGetDeck()
-    {
-        myTurnManager.deck = myDeck;
-    }#1#*/
-    #endregion
-    
 }
 

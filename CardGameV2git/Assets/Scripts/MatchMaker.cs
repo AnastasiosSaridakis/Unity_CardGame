@@ -18,9 +18,12 @@ public class Match
     
     public SyncListGameObject players = new SyncListGameObject();
 
-    public Match(string matchID, GameObject player)
+    public Match(string matchID, GameObject player,bool publicMatch)
     {
+        matchFull = false;
+        inMatch = false;
         this.matchID = matchID;
+        this.publicMatch = publicMatch;
         players.Add(player);
     }
 
@@ -38,6 +41,8 @@ public class MatchMaker : NetworkBehaviour
     public SyncListMatch matches = new SyncListMatch();
     public SyncList<string> matchIDs = new SyncList<string>();
 
+    [SerializeField] int maxMatchPlayers = 2;
+    
     [SerializeField] private GameObject turnManagerPrefab;
     
     void Start()
@@ -51,10 +56,11 @@ public class MatchMaker : NetworkBehaviour
         if (!matchIDs.Contains(_matchID))
         {
             matchIDs.Add(_matchID);
-            Match match = new Match(_matchID, _player);
+            Match match = new Match(_matchID, _player, publicMatch);
             match.publicMatch = publicMatch;
             matches.Add(match);
             //Debug.Log("Match generated");
+            _player.GetComponent<PlayerManager>().currentMatch = match;
             playerIndex = 1;
             return true;
         }
@@ -73,11 +79,22 @@ public class MatchMaker : NetworkBehaviour
             {
                 if (matches[i].matchID == _matchID)
                 {
-                    matches[i].players.Add(_player);
-                    playerIndex = matches[i].players.Count;
-                    break;
+                    if (!matches[i].inMatch && !matches[i].matchFull)
+                    {
+                        matches[i].players.Add(_player);
+                        _player.GetComponent<PlayerManager>().currentMatch = matches[i];
+                        playerIndex = matches[i].players.Count;
+                        if (matches[i].players.Count == maxMatchPlayers)
+                        {
+                            matches[i].matchFull = true;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                
             }
             Debug.Log("<color=green>Match joined</color>");
             return true;
@@ -96,6 +113,7 @@ public class MatchMaker : NetworkBehaviour
         
         for (int i = 0; i < matches.Count; i++)
         {
+            Debug.Log ($"Checking match {matches[i].matchID} | inMatch {matches[i].inMatch} | matchFull {matches[i].matchFull} | publicMatch {matches[i].publicMatch}");
             if (matches[i].publicMatch && !matches[i].matchFull && !matches[i].inMatch)
             {
                 matchID = matches[i].matchID;
@@ -119,6 +137,7 @@ public class MatchMaker : NetworkBehaviour
         {
             if (matches[i].matchID == _matchID)
             {
+                matches[i].inMatch = true;
                 foreach (var player in matches[i].players)
                 {
                     PlayerManager _player = player.GetComponent<PlayerManager>();
@@ -159,6 +178,7 @@ public class MatchMaker : NetworkBehaviour
             {
                 int playerIndex = matches[i].players.IndexOf(player.gameObject);
                 matches[i].players.RemoveAt(playerIndex);
+                matches[i].matchFull = false;
                 Debug.Log($"Player disconnected from match {_matchID} | {matches[i].players.Count} players remaining.");
 
                 if (matches[i].players.Count == 0)
