@@ -537,9 +537,7 @@ public class PlayerManager : NetworkBehaviour
         }
         
         //if (!attackerGO.CompareTag("Card")) return;
-        Animator anim2 = attackerGO.GetComponent<Animator>();
-        anim2.SetTrigger("isAttacking");
-
+        attackerGO.GetComponent<MyFeedbacks>().AttackFeedback();
         if (targetGO.CompareTag("Card") )//if both are cards, both needs to be damaged
         {
             //    Debug.Log("attacker damage is: " + attacker.GetComponent<CardDisplay>().GetAttack());
@@ -549,8 +547,7 @@ public class PlayerManager : NetworkBehaviour
             Debug.Log($"<color=yellow>{targetGO.GetComponent<CardDisplay>().nameText.text} remaining health is {targetInfo.health - attackerInfo.attack}</color>");    
             targetGO.GetComponent<CardDisplay>().setHealth(targetInfo.health - attackerInfo.attack);
             targetInfo.health = targetGO.GetComponent<CardDisplay>().GetHealth();
-            Animator anim1 = targetGO.GetComponent<Animator>();
-            anim1.SetTrigger("isTakingAttack");
+            targetGO.GetComponent<MyFeedbacks>().GetAttackedFeedback();
             Debug.Log($"<color=yellow>{attackerGO.GetComponent<CardDisplay>().nameText.text} remaining health is {attackerInfo.health - targetInfo.attack}</color>");    
             attackerGO.GetComponent<CardDisplay>().setHealth(attackerInfo.health - targetInfo.attack);
             attackerInfo.health= attackerGO.GetComponent<CardDisplay>().GetHealth();

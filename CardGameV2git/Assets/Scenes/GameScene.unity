@@ -479,7 +479,7 @@ GameObject:
   - component: {fileID: 476427106}
   - component: {fileID: 476427105}
   m_Layer: 5
-  m_Name: Image
+  m_Name: centralLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2984,6 +2984,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5313975013518196623, guid: d8420c28f5a79b448b446eabc6834ce7,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8420c28f5a79b448b446eabc6834ce7, type: 3}
