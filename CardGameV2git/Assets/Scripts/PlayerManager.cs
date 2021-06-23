@@ -472,7 +472,7 @@ public class PlayerManager : NetworkBehaviour
                     }
                 }
                 go.transform.SetParent(mulliganPanel.transform, true);
-                go.transform.localScale = new Vector3(1.6f, 1.6f, 1.6f);
+                go.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
                 go.GetComponent<CanvasGroup>().blocksRaycasts = false;
             }
             else
@@ -550,7 +550,7 @@ public class PlayerManager : NetworkBehaviour
             targetGO.GetComponent<CardDisplay>().setHealth(targetInfo.health - attackerInfo.attack);
             targetInfo.health = targetGO.GetComponent<CardDisplay>().GetHealth();
             Animator anim1 = targetGO.GetComponent<Animator>();
-            anim1.SetTrigger("isAttacking");
+            anim1.SetTrigger("isTakingAttack");
             Debug.Log($"<color=yellow>{attackerGO.GetComponent<CardDisplay>().nameText.text} remaining health is {attackerInfo.health - targetInfo.attack}</color>");    
             attackerGO.GetComponent<CardDisplay>().setHealth(attackerInfo.health - targetInfo.attack);
             attackerInfo.health= attackerGO.GetComponent<CardDisplay>().GetHealth();
