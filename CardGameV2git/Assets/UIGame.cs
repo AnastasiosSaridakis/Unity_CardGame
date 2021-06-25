@@ -27,6 +27,9 @@ public class UIGame : MonoBehaviour
     
     public TMP_Text turnText;
 
+    [SerializeField] public GameObject pauseMenu;
+    [SerializeField] private bool isPaused;
+
     [Header("EndGame Phase")] 
     public GameObject endGamePanel;
     public GameObject endGameWinnerPoster;
@@ -55,5 +58,24 @@ public class UIGame : MonoBehaviour
         tableTop = GameObject.FindGameObjectWithTag("Tabletop");
         //enemyHand= GameObject.FindGameObjectWithTag("Hand")
         enemyTableTop = GameObject.FindGameObjectWithTag("EnemyTabletop");
+        isPaused = false;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && GameManager.Instance.currentGameState == GameManager.GameState.PlayerTurn)
+        {
+            if (!isPaused)
+            {
+                pauseMenu.SetActive(true);
+                isPaused = true;
+            }
+            else
+            {
+                pauseMenu.SetActive(false);
+                pauseMenu.transform.GetChild(2).gameObject.SetActive(false);
+                isPaused = false;
+            }
+        }
     }
 }

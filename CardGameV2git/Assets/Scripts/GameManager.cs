@@ -316,13 +316,25 @@ public class GameManager : MonoBehaviour
 
     public void WonGame()
     {
+        if(currentCoroutine!=null)
+            StopCoroutine(currentCoroutine);
+        runesAnimator.enabled = false;
+        
         endGamePanel.SetActive(true);
-        UIGame.Instance.endGameWinnerPoster.SetActive(true);
+        UIGame.Instance.endGameWinnerPoster.SetActive(true); 
     }
     public void LostGame()
     {
+        if(currentCoroutine!=null)
+            StopCoroutine(currentCoroutine);
+        runesAnimator.enabled = false;
+        UIGame.Instance.pauseMenu.SetActive(false);
         endGamePanel.SetActive(true);
         UIGame.Instance.endGameLoserPoster.SetActive(true);
+    } 
+    public void ForfeitGame()
+    {
+        playerManager.CmdForfeitGame();
     }
     public void RestartGame()
     {

@@ -293,7 +293,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2804823905641224395}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -1787,7 +1787,7 @@ MonoBehaviour:
   cardArtworkList:
   - {fileID: 359480944078259239}
   - {fileID: 2822916561528949986}
-  - {fileID: 3397506413171599382}
+  - {fileID: 806851954557415875}
   - {fileID: 7607001358389516513}
   textList:
   - {fileID: 6967058890267503463}
@@ -2119,11 +2119,11 @@ RectTransform:
   m_Father: {fileID: 5543304980699131397}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 6.0447, y: 5.6504}
-  m_SizeDelta: {x: 17.725616, y: 24.683716}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -54.064, y: -87}
+  m_SizeDelta: {x: 29.014282, y: 29.014282}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8425302395966440859
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2145,13 +2145,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.8584906, g: 0.8584906, b: 0.8584906, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5121408c9a332544f856fd953f58fac0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: daeb67d1243535c4c9e616b543095d21, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2650,7 +2650,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -14.06}
+  m_AnchoredPosition: {x: 0, y: -8.6066}
   m_SizeDelta: {x: 116.14783, y: 134.91858}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8880674562942033371

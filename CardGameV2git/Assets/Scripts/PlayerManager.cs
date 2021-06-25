@@ -145,6 +145,8 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
+
+
     public void EmptyHandList()
     {
         handList.Clear();
@@ -215,6 +217,27 @@ public class PlayerManager : NetworkBehaviour
             //UIGame.Instance.waitingPlayerText.enabled = true;
         }
         
+    }
+
+    [Command]
+    public void CmdForfeitGame()
+    {
+        RpcForfeitGame();
+    }
+
+    [ClientRpc]
+    public void RpcForfeitGame()
+    {
+        if (hasAuthority)
+        {
+            GameManager.Instance.ChangeGameState(GameManager.GameState.EndGame);
+            GameManager.Instance.LostGame();
+        }
+        else
+        {
+            GameManager.Instance.ChangeGameState(GameManager.GameState.EndGame);
+            GameManager.Instance.WonGame();
+        }
     }
     
     [Command]
@@ -495,13 +518,40 @@ public class PlayerManager : NetworkBehaviour
         if (hasAuthority)
         {Debug.Log("FIrst if yes authority");
             attackerGO = tabletop.transform.GetChild(firstIndex).gameObject;
-            targetGO = targetType.Equals("Card") ? enemytabletop.transform.GetChild(secondIndex).gameObject : GameManager.Instance.enemyPortrait;
+            if(attackerGO == null)
+                return;
+            attackerGO.GetComponent<MyFeedbacks>().AttackFeedback();
+            
+            if (targetType.Equals("Card"))
+            {
+                targetGO = enemytabletop.transform.GetChild(secondIndex).gameObject;
+                if(targetGO == null)
+                    return;
+                targetGO.GetComponent<MyFeedbacks>().GetAttackedFeedback();
+            }
+            else
+            {
+                targetGO = GameManager.Instance.enemyPortrait;
+            }
         }
         else
         {
             Debug.Log("FIrst if no authority");
              attackerGO = enemytabletop.transform.GetChild(firstIndex).gameObject;
-             targetGO = targetType.Equals("Card") ? tabletop.transform.GetChild(secondIndex).gameObject : GameManager.Instance.playerPortrait;
+             if(attackerGO == null)
+                 return;
+             attackerGO.GetComponent<MyFeedbacks>().GetAttackedFeedback();
+             if (targetType.Equals("Card"))
+             {
+                 targetGO = tabletop.transform.GetChild(secondIndex).gameObject;
+                 if(targetGO == null)
+                     return;
+                 targetGO.GetComponent<MyFeedbacks>().AttackFeedback();
+             }
+             else
+             {
+                 targetGO = GameManager.Instance.playerPortrait;
+             }
         }
 
         if (attackerGO == null || targetGO == null)
@@ -511,7 +561,7 @@ public class PlayerManager : NetworkBehaviour
         }
         
         //if (!attackerGO.CompareTag("Card")) return;
-        attackerGO.GetComponent<MyFeedbacks>().AttackFeedback();
+        //attackerGO.GetComponent<MyFeedbacks>().AttackFeedback();
         if (targetGO.CompareTag("Card") )//if both are cards, both needs to be damaged
         {
             //    Debug.Log("attacker damage is: " + attacker.GetComponent<CardDisplay>().GetAttack());
@@ -521,7 +571,7 @@ public class PlayerManager : NetworkBehaviour
             Debug.Log($"<color=yellow>{targetGO.GetComponent<CardDisplay>().nameText.text} remaining health is {targetInfo.health - attackerInfo.attack}</color>");    
             targetGO.GetComponent<CardDisplay>().setHealth(targetInfo.health - attackerInfo.attack);
             targetInfo.health = targetGO.GetComponent<CardDisplay>().GetHealth();
-            targetGO.GetComponent<MyFeedbacks>().GetAttackedFeedback();
+            //targetGO.GetComponent<MyFeedbacks>().GetAttackedFeedback();
             Debug.Log($"<color=yellow>{attackerGO.GetComponent<CardDisplay>().nameText.text} remaining health is {attackerInfo.health - targetInfo.attack}</color>");    
             attackerGO.GetComponent<CardDisplay>().setHealth(attackerInfo.health - targetInfo.attack);
             attackerInfo.health= attackerGO.GetComponent<CardDisplay>().GetHealth();
