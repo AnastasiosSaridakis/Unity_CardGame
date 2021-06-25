@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -779030220757077966}
   m_Layer: 0
   m_Name: PlayerManager
-  m_TagString: Untagged
+  m_TagString: PlayerManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -86,13 +86,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0
+  hand: {fileID: 0}
+  tabletop: {fileID: 0}
+  enemyHand: {fileID: 0}
+  enemytabletop: {fileID: 0}
+  mulliganPanel: {fileID: 0}
   cardPrefab: {fileID: 5543304980699131396, guid: e06fd87e825eef440b00fb1fc5c2e011,
     type: 3}
   placeHolder: {fileID: 0}
-  isMyTurn: 0
   playersReady: 0
   matchID: 
   playerIndex: 0
+  currentMatch:
+    matchID: 
+    publicMatch: 0
+    inMatch: 0
+    matchFull: 0
+  username: 
+  isMyTurn: 0
+  diceRoll: 0
+  turn: 0
+  isTimeFlagged: 0
+  handList: []
+  tabletopList: []
+  playerLobbyUI: {fileID: 0}
 --- !u!114 &-779030220757077966
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -39,12 +40,21 @@ public class GameManager : MonoBehaviour
     public int maxCardsInHand;
     public int maxCardsOnBoard;
     public Button endTurnButton;
-    public int playersReady;
+    public int playersMulliganed;
     public GameObject endGamePanel;
     public Material greenFlame;
     public Material redFlame;
     public Material blueFlame;
+    [SerializeField]private GameObject[] playerList;
+    [Header("TurnOptions")]
     public int turnNumber;
+    [SerializeField] private List<Image> runeList;
+    //[SerializeField] private bool isTimeFlagged;
+    [SerializeField] private float TotalTurnTimer;
+    [SerializeField] private TMP_Text timerTxt;
+    [SerializeField] private Animator runesAnimator;
+    [SerializeField] private Coroutine currentCoroutine;
+    [SerializeField] public bool isFlagged;
     private bool DebugMode; //I AM USELESS PLZ REMOVE ME
 
     void Awake()
@@ -78,19 +88,27 @@ public class GameManager : MonoBehaviour
         minionSelected = null;
         Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.ForceSoftware);
         endTurnButton.interactable = false;
-            //startButton = mulliganPanel.GetComponent<MulliganPanel>().GetStartGameButton();
-            //mulliganButton = mulliganPanel.GetComponent<MulliganPanel>().GetMulliganButton();
-            //keepButton = mulliganPanel.GetComponent<MulliganPanel>().GetKeepButton();
-            //waitingPlayerText = mulliganPanel.GetComponent<MulliganPanel>().GetPlayerText();
+        playerList = GameObject.FindGameObjectsWithTag("PlayerManager");
+    }
+
+    private void Update()
+    {
         
     }
-    
+
     public void ChangeTurn()
     {
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
         playerManager = networkIdentity.GetComponent<PlayerManager>();
-        
-        playerManager.CmdChangeTurn();
+
+        foreach (GameObject pm in playerList)
+        {
+            if (pm.GetComponent<PlayerManager>() != playerManager) 
+            {
+                Debug.Log("Im inside foreach");
+                playerManager.CmdChangeTurn(pm.GetComponent<PlayerManager>().isTimeFlagged);
+            }
+        }
     }
 
     public void ReloadText()
@@ -105,7 +123,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            turnText.SetText("Opponent's turn");
+            turnText.SetText("Enemy turn");
         }
     }
 
@@ -182,7 +200,11 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
+
+            //hasChangedTurn = true;
+            TurnTimer();
             currentGameState = GameState.PlayerTurn;
+            
         }
         else if (gameState == GameState.EndGame)
         {
@@ -273,6 +295,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void AcceptedMulligan()
+    {
+        NetworkIdentity networkIdentity = NetworkClient.connection.identity;
+        playerManager = networkIdentity.GetComponent<PlayerManager>();
+
+        playerManager.SetAcceptedMulligan();
+    }
     public void StartGame()
     {
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
@@ -288,18 +317,84 @@ public class GameManager : MonoBehaviour
     public void WonGame()
     {
         endGamePanel.SetActive(true);
-        endGamePanel.GetComponentInChildren<TextMeshProUGUI>().SetText("Congratulations, You Won!");
+        UIGame.Instance.endGameWinnerPoster.SetActive(true);
     }
     public void LostGame()
     {
         endGamePanel.SetActive(true);
-        endGamePanel.GetComponentInChildren<TextMeshProUGUI>().SetText("Unfortunately, You Lost!");
+        UIGame.Instance.endGameLoserPoster.SetActive(true);
     }
     public void RestartGame()
     {
         UILobby.Instance.DisconnectLobby();
         NetworkManager.singleton.StopClient();
     }
-    
+
+    public void TurnTimer()
+    {
+        /*for(int i =0; i<runeList.Count;i++)
+        {
+            runeList[i].color = new Color32(31, 231, 255, 255);
+        }*/
+
+        if(currentCoroutine!=null)
+            StopCoroutine(currentCoroutine);
+        
+        currentCoroutine = StartCoroutine(CountDown());
+    }
+
+    private IEnumerator CountDown()
+    {
+        NetworkIdentity networkIdentity = NetworkClient.connection.identity;
+        playerManager = networkIdentity.GetComponent<PlayerManager>();
+        
+        int i = 1;
+        float counter = 0;
+        float maxTurnTimer = 0;
+        maxTurnTimer = !isFlagged ? TotalTurnTimer : 18f;
+        if (runesAnimator.enabled == false)
+        {
+            runesAnimator.enabled = true;
+        }
+
+        if (!isFlagged)
+        {
+            runesAnimator.Play("RuneBar",-1,0f);
+        }
+        else
+        {
+            runesAnimator.Play("RuneBar",-1,0.7f);
+        }
+        
+        Debug.Log($"Im inside CountDown | Setting animator to true");
+        while (counter < maxTurnTimer)
+        {
+            counter += Time.deltaTime;
+            timerTxt.text = counter.ToString("N1");
+            
+            if (counter >= 6*i)
+            {
+                Debug.Log("We have waited for: " + counter + " seconds and i value is: "+i);
+                i++;
+            }
+            yield return null;
+        }
+        
+        Debug.Log($"HERE CHANGE TURN AUTOMATICALLY!!!");
+        if (playerManager.isMyTurn)
+        {
+            playerManager.CmdTimeFlagged(true,playerManager);
+            ChangeTurn();
+        }
+    }
+
+    public void ManualButtonPress()
+    {
+        NetworkIdentity networkIdentity = NetworkClient.connection.identity;
+        playerManager = networkIdentity.GetComponent<PlayerManager>();
+        
+        playerManager.CmdTimeFlagged(false,playerManager);
+        Debug.Log($"Button: Setting {playerManager.netIdentity} isTimeFlagged to: {playerManager.isTimeFlagged}");
+    }
     
 }

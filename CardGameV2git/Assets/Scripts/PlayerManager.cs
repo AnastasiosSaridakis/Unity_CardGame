@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using Mirror.Examples.Additive;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -34,6 +35,7 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar] public bool isMyTurn = false;
     [SyncVar] public int diceRoll;
     [SyncVar] public int turn;
+    [SyncVar] public bool isTimeFlagged = false;
     [SerializeField] private List<GameObject> handList;
     [SerializeField] private List<GameObject> tabletopList;
     
@@ -117,75 +119,14 @@ public class PlayerManager : NetworkBehaviour
             }
         }
     }
-
-    /*[Command]
-    public void CmdSpawnObjects()
-    {
-        if (isServer)
-        {
-            Debug.Log($"im in server - preparing to spawn items");
-            NetworkServer.SpawnObjects();
-            RpcSpawnObjects();
-        }
-    }*/
-
-    /*[ClientRpc]
-    public void RpcSpawnObjects()
-    {
-        if (isClient)
-        {
-            setPlayersActive();
-            Debug.Log($"Im in clientRPC - preparing to get spawned items");
-            NetworkClient.PrepareToSpawnSceneObjects();
-        }
-    }
-
-    [Command]
-    public void setPlayersActive()
-    {
-        NetworkServer.SetClientReady(connectionToClient);
-        Debug.Log($"im in server - setting client {connectionToClient} ready");
-    }*/
-    
-    /*public override void OnStartClient()
-    {
-        base.OnStartClient();
-
-        hand = GameObject.FindWithTag("Hand");
-        tabletop = GameObject.FindWithTag("Tabletop");
-        enemyHand = GameObject.FindWithTag("EnemyHand");
-        enemytabletop = GameObject.FindWithTag("EnemyTabletop");
-        mulliganPanel = GameObject.FindWithTag("MulliganPanel");
-        if (hasAuthority)
-        {
-            //StartCoroutine(DelayedRegistration());
-            //GameManager.Instance.ChangeGameState(GameManager.GameState.Mulligan);
-        }
-        if (GameManager.Instance.DebugMode)
-        {
-            isMyTurn = true;
-            CmdChangeTurn();
-        }
-        if (isClientOnly)
-        {
-            isMyTurn = true;
-            CmdChangeTurn();
-        }
-    }*/
-
-    //private IEnumerator DelayedRegistration()
-    //{
-    //    while (GameManager.Instance == null)
-    //    {
-    //        yield return null;
-    //    }
-    //    GameManager.Instance.ChangeGameState(GameManager.GameState.Mulligan);
-    //}
-
-        
     public void SetPlayerReady()
     {
         CmdPlayerReady();
+    }
+    
+    public void SetAcceptedMulligan()
+    {
+        CmdAcceptedMulligan(GameManager.Instance.playersMulliganed);
     }
 
     public void DealCards(Card card)
@@ -249,8 +190,33 @@ public class PlayerManager : NetworkBehaviour
         {
             Debug.Log($"Players are {currentPlayersReady} and waiting OR not local");
         }
+    }    
+    
+    [Command]
+    public void CmdAcceptedMulligan(int acceptedM)
+    {
+        acceptedM++;
+        RpcAcceptedMulligan(acceptedM);
     }
 
+    [ClientRpc]
+    public void RpcAcceptedMulligan(int _acceptedMulligan)
+    {
+        GameManager.Instance.playersMulliganed = _acceptedMulligan;
+        if (_acceptedMulligan == 2)
+        {
+            //Start Game
+            Debug.Log($"Players are {_acceptedMulligan} and starting Game");
+            GameManager.Instance.KeepCards();
+        }
+        else
+        {
+            Debug.Log($"Players are {_acceptedMulligan} and waiting");
+            //UIGame.Instance.waitingPlayerText.enabled = true;
+        }
+        
+    }
+    
     [Command]
     public void CmdMulliganCards(int id)
     {
@@ -321,10 +287,16 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [Command]
-    public void CmdChangeTurn()
+    public void CmdChangeTurn(bool flagged)
     {
         turn++;
-        RpcChangeTurn(turn);
+        RpcChangeTurn(turn,flagged);
+    }
+
+    [Command]
+    public void CmdTimeFlagged(bool flagged,PlayerManager player)
+    {
+        player.isTimeFlagged = flagged;
     }
 
     [Command]
@@ -497,13 +469,15 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcChangeTurn(int turn)
+    void RpcChangeTurn(int turn,bool flagged)
     {
         GameManager.Instance.turnNumber++;
         PlayerManager pm = NetworkClient.connection.identity.GetComponent<PlayerManager>();
+        
         pm.isMyTurn = !(pm.isMyTurn);
-        if (GameManager.Instance == null) return;
-        //GameManager.Instance.currentGameState = GameManager.GameState.PlayerTurn;
+        
+        GameManager.Instance.isFlagged = flagged;
+        
         GameManager.Instance.ChangeGameState(GameManager.GameState.PlayerTurn);
         if (GameManager.Instance.maxMana < 10 && pm.isMyTurn)
             GameManager.Instance.maxMana++;
@@ -593,6 +567,7 @@ public class PlayerManager : NetworkBehaviour
             else//I am receiving the attack so I have to take damage
             {
                 GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().TakeDamage(attackerInfo.attack);
+                attackerGO.GetComponent<MyFeedbacks>().GetAttackedFeedback();
                 //GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().SetHealth(GameManager.Instance.playerPortrait.GetComponent<PlayerPortrait>().GetHealth()- attacker.GetComponent<CardDisplay>().GetAttack());
 
                 if (targetGO.GetComponent<PlayerPortrait>().GetHealth() > 0) return;

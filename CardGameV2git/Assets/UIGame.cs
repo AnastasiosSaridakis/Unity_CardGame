@@ -29,7 +29,8 @@ public class UIGame : MonoBehaviour
 
     [Header("EndGame Phase")] 
     public GameObject endGamePanel;
-    public TMP_Text endGameMessage;
+    public GameObject endGameWinnerPoster;
+    public GameObject endGameLoserPoster;
     public Button leaveGameButton;
     
     private static UIGame _instance;
