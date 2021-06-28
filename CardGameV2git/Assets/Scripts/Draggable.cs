@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -124,6 +125,12 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
                 this.transform.SetParent(tabletop.transform);
                 this.transform.SetSiblingIndex(placeholder.transform.GetSiblingIndex());
+                if (gameObject.GetComponent<CardDisplay>().abilities
+                    .Any(f => f.abilityName == "Charge")) //If any ability of the card is Charge
+                {
+                    gameObject.GetComponent<Draggable>().canAttack = true;
+                    gameObject.GetComponent<Image>().material = GameManager.Instance.greenFlame;
+                }
                 PlayerManager.PlayCard( gameObject, "tabletop", newSiblingIndex);
             }
             else //if board IS full, return it to my hand
@@ -181,7 +188,37 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         {
             if ((gameObject.transform.parent == enemytabletop.transform || gameObject.CompareTag("EnemyPlayer")) && PlayerManager.isMyTurn)
             {//if u have already selected your minion AND you select an enemy minion OR heroe, you attack here     
-
+                bool flag = false;
+                foreach (Transform transform in enemytabletop.transform)
+                {
+                    if (transform.gameObject.GetComponent<CardDisplay>().abilities.Any(f => f.abilityName == "Taunt"))//if any enemy minion has taunt
+                    {
+                        if (gameObject.CompareTag("EnemyPlayer"))//if i target the hero
+                        {
+                            Debug.Log($"<color=red>THERE IS A MINION WITH TAUNT and i target the hero!</color>");
+                            flag = true;
+                            break;
+                        }
+                        if (!gameObject.GetComponent<CardDisplay>().abilities.Any(f => f.abilityName == "Taunt"))//If my target doesnt have taunt
+                        {
+                            Debug.Log($"<color=red>THERE IS A MINION WITH TAUNT AND ITS NOT THE ONE YOU TARGET!</color>");
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                if (flag) //Check if I found any taunt targets, call TauntFeedback and return
+                {
+                    foreach (Transform transform in enemytabletop.transform)
+                    {
+                        if (transform.gameObject.GetComponent<CardDisplay>().abilities
+                            .Any(f => f.abilityName == "Taunt"))
+                        {
+                            transform.gameObject.GetComponent<MyFeedbacks>().TauntFeedback();
+                        }
+                    }
+                    return;
+                }
                 //Color c = GameManager.Instance.minionSelected.GetComponent<Image>().color;//de-highlight your minion
                 //c.a = 0;
                 //GameManager.Instance.minionSelected.GetComponent<Image>().color = c;

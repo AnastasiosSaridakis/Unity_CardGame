@@ -10,6 +10,7 @@ public class MyFeedbacks : MonoBehaviour
     [SerializeField] private MMFeedbacks attackFeedback2;
     [SerializeField] private MMFeedbacks damageTakenFeedback1;
     [SerializeField] private MMFeedbacks damageTakenFeedback2;
+    [SerializeField] private MMFeedbacks tauntFeedback;
 
 
     public void GetAttackedFeedback()
@@ -22,5 +23,11 @@ public class MyFeedbacks : MonoBehaviour
     {
         attackFeedback1?.PlayFeedbacks();
         attackFeedback2?.PlayFeedbacks();
+    }
+
+    public void TauntFeedback()
+    {
+        tauntFeedback?.StopFeedbacks();
+        tauntFeedback?.PlayFeedbacks();
     }
 }

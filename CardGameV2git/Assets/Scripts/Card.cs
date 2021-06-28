@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [System.Serializable]
@@ -14,13 +15,31 @@ public class Card : ScriptableObject
     public int health;
     public string description;
     public Sprite artworkImage;
-    
+    public List<Ability> abilities;
+
+
+    public string GetDescription()
+    {
+        string str = "";
+        if (abilities == null)
+            return null;
+        foreach (Ability ability in abilities)
+        {
+            if(str.Equals(""))
+                str = str + ability.abilityName;
+            else
+                str = str +"\n" +ability.abilityName;
+        }
+
+        return str;
+    }
+
     public Card()
     {
 
     }
 
-    public Card(int Id, string Name, int Cost, int Attack, int Health, string Description, Sprite Artwork)
+    public Card(int Id, string Name, int Cost, int Attack, int Health, string Description, Sprite Artwork, List<Ability> Abilities)
     {
         id = Id;
         cardname = Name;
@@ -29,5 +48,8 @@ public class Card : ScriptableObject
         health = Health;
         description = Description;
         artworkImage = Artwork;
+        abilities = Abilities;
     }
 }
+
+

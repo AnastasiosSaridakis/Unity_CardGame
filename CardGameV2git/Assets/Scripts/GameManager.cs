@@ -194,9 +194,10 @@ public class GameManager : MonoBehaviour
                     if (child.gameObject.tag == "Card")
                     {
                         child.gameObject.GetComponent<Draggable>().canAttack = false;
-                        Color c = child.gameObject.GetComponent<Image>().color;
+                        /*Color c = child.gameObject.GetComponent<Image>().color;
                         c.a = 0;
-                        child.gameObject.GetComponent<Image>().color = c;
+                        child.gameObject.GetComponent<Image>().color = c;*/
+                        child.gameObject.GetComponent<Image>().material = null;
                     }
                 }
             }
