@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -34,7 +35,7 @@ public class UILobby : MonoBehaviour
     [SerializeField]
     private GameObject playerLobbyUI;
     [SerializeField]
-    private GameObject enemyPlayerLobbyUI;
+    private GameObject LobbyList;
 
     private bool searching = false;
     void Awake()
@@ -48,7 +49,26 @@ public class UILobby : MonoBehaviour
             _instance = this;
         }
     }
-    
+
+    private void Update()
+    {
+        if (playersPanel.activeSelf && LobbyList.transform.childCount < 2)
+        {
+            if (beginGameButton.interactable)
+            {
+                beginGameButton.interactable = false;
+            }
+        }
+        else if (playersPanel.activeSelf && LobbyList.transform.childCount == 2)
+        {
+            if (!beginGameButton.interactable)
+            {
+                beginGameButton.interactable = true;
+            }
+
+        }
+    }
+
     public void HostPrivate()
     {
         joinMatchInput.interactable = false;
@@ -77,7 +97,6 @@ public class UILobby : MonoBehaviour
     {
         if (success)
         {
-            Debug.Log("setting canvas to true here");
             mainPanel.SetActive(false);
             playersPanel.SetActive(true);
             
@@ -85,6 +104,7 @@ public class UILobby : MonoBehaviour
             playerLobbyUI = SpawnPlayerUIPrefab(PlayerManager.localPlayer);
             matchIDText.text = matchID;
             beginGameButton.gameObject.SetActive(true);
+            //beginGameButton.interactable = false;
         }
         else
         {

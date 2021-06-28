@@ -22,7 +22,7 @@ public class Card : ScriptableObject
     {
         string str = "";
         if (abilities == null)
-            return null;
+            return "";
         foreach (Ability ability in abilities)
         {
             if(str.Equals(""))

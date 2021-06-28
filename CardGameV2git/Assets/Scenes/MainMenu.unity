@@ -3508,7 +3508,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &408328530
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4456,6 +4456,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LevelLoader
+      objectReference: {fileID: 0}
+    - target: {fileID: 728429530058225777, guid: cede7fd3d76e5944e95370aed3374cf9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1240446006065244503, guid: cede7fd3d76e5944e95370aed3374cf9,
         type: 3}
@@ -12361,7 +12366,7 @@ MonoBehaviour:
   sounds:
   - name: Theme Music
     clip: {fileID: 8300000, guid: 5b009e9ee6a1a5c4ebee737b666a07e8, type: 3}
-    volume: 0
+    volume: 0.2
     pitch: 1
     group: {fileID: 4592373303499466338, guid: 99065842b290fd2489c2f12b5cdff1bc, type: 2}
     loop: 1
@@ -15527,7 +15532,7 @@ PrefabInstance:
     - target: {fileID: 1308741396539556045, guid: c54e9e1663c2b5c44b73535205f77c1e,
         type: 3}
       propertyPath: networkAddress
-      value: localhost
+      value: 3.17.53.245
       objectReference: {fileID: 0}
     - target: {fileID: 1308741396539556046, guid: c54e9e1663c2b5c44b73535205f77c1e,
         type: 3}
@@ -16500,6 +16505,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BugReportUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 2626881395655942080, guid: 9b345906ef6eb2c419f23e51c969787c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2627606019445090368, guid: 9b345906ef6eb2c419f23e51c969787c,
         type: 3}
