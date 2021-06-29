@@ -24,9 +24,9 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: e1466517f0324e543bdaa4af82c4cad0, type: 2}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.22169462, g: 0.25960588, b: 0.28034747, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -12366,14 +12366,28 @@ MonoBehaviour:
   sounds:
   - name: Theme Music
     clip: {fileID: 8300000, guid: 5b009e9ee6a1a5c4ebee737b666a07e8, type: 3}
-    volume: 0.2
+    volume: 0.15
     pitch: 1
     group: {fileID: 4592373303499466338, guid: 99065842b290fd2489c2f12b5cdff1bc, type: 2}
     loop: 1
     source: {fileID: 0}
   - name: button
-    clip: {fileID: 8300000, guid: ebc1fb9a800264d4dba6d1c8d05e54f9, type: 3}
+    clip: {fileID: 8300000, guid: 3dd84b2b8b6082342b732b7a6b0e2548, type: 3}
     volume: 0.15
+    pitch: 1
+    group: {fileID: 2966228532809772365, guid: 99065842b290fd2489c2f12b5cdff1bc, type: 2}
+    loop: 0
+    source: {fileID: 0}
+  - name: Win
+    clip: {fileID: 8300000, guid: 0fd72d1d93c9af241a3b04842c3bc33c, type: 3}
+    volume: 0.33
+    pitch: 1
+    group: {fileID: 2966228532809772365, guid: 99065842b290fd2489c2f12b5cdff1bc, type: 2}
+    loop: 0
+    source: {fileID: 0}
+  - name: Lose
+    clip: {fileID: 8300000, guid: 23b33abb28d582d45b8eb917371fd8ec, type: 3}
+    volume: 0.33
     pitch: 1
     group: {fileID: 2966228532809772365, guid: 99065842b290fd2489c2f12b5cdff1bc, type: 2}
     loop: 0

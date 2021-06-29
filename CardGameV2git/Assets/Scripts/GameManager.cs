@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using MoreMountains.Feedbacks;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -56,6 +57,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Coroutine currentCoroutine;
     [SerializeField] public bool isFlagged;
     private bool DebugMode; //I AM USELESS PLZ REMOVE ME
+    [Header("Feedbacks")]
+    public MMFeedbacks yourTurnAnnounce;
+    public MMFeedbacks turnTextFeedback;
 
     void Awake()
     {
@@ -118,12 +122,13 @@ public class GameManager : MonoBehaviour
 
         if (playerManager.isMyTurn == true)
         {
-            turnText.SetText("My turn");
+            turnText.SetText("");
             manaText.SetText(currentMana.ToString() + "/" + maxMana.ToString());
         }
         else
         {
-            turnText.SetText("Enemy turn");
+            turnTextFeedback.StopFeedbacks();
+            turnText.SetText("Enemy Turn");
         }
     }
 
@@ -178,12 +183,17 @@ public class GameManager : MonoBehaviour
                     }
                 }
                 playerDeck.Draw();
+                if (!yourTurnAnnounce.transform.parent.gameObject.activeSelf)
+                    yourTurnAnnounce.transform.parent.gameObject.SetActive(true);
+                yourTurnAnnounce?.PlayFeedbacks();
+                turnTextFeedback?.PlayFeedbacks();
             }
             else
             {
                 if (turnNumber == 0)
                 {
                     playerDeck.Draw();
+                    ReloadText();
                     Debug.Log($"Drawing an extra card because im not first!...");
                 }
                 endTurnButton.interactable = false;
@@ -323,6 +333,7 @@ public class GameManager : MonoBehaviour
         
         endGamePanel.SetActive(true);
         UIGame.Instance.endGameWinnerPoster.SetActive(true); 
+        AudioManager.instance.Play("Win");
     }
     public void LostGame()
     {
@@ -332,6 +343,7 @@ public class GameManager : MonoBehaviour
         UIGame.Instance.pauseMenu.SetActive(false);
         endGamePanel.SetActive(true);
         UIGame.Instance.endGameLoserPoster.SetActive(true);
+        AudioManager.instance.Play("Lose");
     } 
     public void ForfeitGame()
     {

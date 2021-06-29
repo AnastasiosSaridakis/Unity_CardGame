@@ -94,7 +94,7 @@ public class PlayerManager : NetworkBehaviour
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
-        if (scene.buildIndex == 3)
+        if (scene.buildIndex == 4)
         {
             Debug.Log($"<color=red> 2 game scene finised loading</color>");
            // CmdSpawnObjects();
@@ -387,6 +387,7 @@ public class PlayerManager : NetworkBehaviour
                 Debug.Log("Eimai sto RPCplaycard, NO authority, enemytabletop");
                 GameObject card = Instantiate(cardPrefab, enemytabletop.transform, false);
                 card.GetComponent<CardDisplay>().InitializeStats(info);
+                card.GetComponent<Draggable>().isDraggable = false;
                 card.GetComponent<CanvasGroup>().blocksRaycasts = true;
                // card.transform.Rotate(0f, 0f, 180f);
                 card.transform.SetSiblingIndex(index);
@@ -803,7 +804,7 @@ public class PlayerManager : NetworkBehaviour
             Debug.Log("Setting client not ready");
             //CmdSetPlayersNotReady();
         }
-        SceneManager.LoadScene(3, LoadSceneMode.Additive);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1, LoadSceneMode.Additive);
     }
     #endregion
 
