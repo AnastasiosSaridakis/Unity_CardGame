@@ -797,6 +797,7 @@ MonoBehaviour:
   - {fileID: 2731391595328380952}
   - {fileID: 2730709453519695204}
   - {fileID: 2730462183405476990}
+  screenshotSlotsImage: []
 --- !u!1 &2626893684299685956
 GameObject:
   m_ObjectHideFlags: 0
@@ -3639,7 +3640,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &3959609036169118929
 MonoBehaviour:

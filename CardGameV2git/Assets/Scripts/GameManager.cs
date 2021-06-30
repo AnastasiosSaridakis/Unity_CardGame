@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
     private bool DebugMode; //I AM USELESS PLZ REMOVE ME
     [Header("Feedbacks")]
     public MMFeedbacks yourTurnAnnounce;
-    public MMFeedbacks turnTextFeedback;
+    public Animator anim;
 
     void Awake()
     {
@@ -120,14 +120,14 @@ public class GameManager : MonoBehaviour
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
         playerManager = networkIdentity.GetComponent<PlayerManager>();
 
-        if (playerManager.isMyTurn == true)
+        if (playerManager.isMyTurn)
         {
-            turnText.SetText("");
             manaText.SetText(currentMana.ToString() + "/" + maxMana.ToString());
         }
         else
         {
-            turnTextFeedback.StopFeedbacks();
+            anim.SetBool("StartTurn",false);
+            yourTurnAnnounce?.StopFeedbacks();
             turnText.SetText("Enemy Turn");
         }
     }
@@ -183,10 +183,8 @@ public class GameManager : MonoBehaviour
                     }
                 }
                 playerDeck.Draw();
-                if (!yourTurnAnnounce.transform.parent.gameObject.activeSelf)
-                    yourTurnAnnounce.transform.parent.gameObject.SetActive(true);
+                anim.SetBool("StartTurn",true);
                 yourTurnAnnounce?.PlayFeedbacks();
-                turnTextFeedback?.PlayFeedbacks();
             }
             else
             {
@@ -196,7 +194,7 @@ public class GameManager : MonoBehaviour
                     ReloadText();
                     Debug.Log($"Drawing an extra card because im not first!...");
                 }
-                endTurnButton.interactable = false;
+                //endTurnButton.interactable = false;
                 //Debug.Log("playerManager.!isMyTurn");
                 for (int i = tabletop.transform.childCount - 1; i >= 0; --i)//Set all played minions canAttack to false
                 {

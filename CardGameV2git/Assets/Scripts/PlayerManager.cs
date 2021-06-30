@@ -581,9 +581,10 @@ public class PlayerManager : NetworkBehaviour
                 
             if (attackerGO.GetComponent<CardDisplay>().GetHealth() <= 0)
             {
+                attackerGO.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 attackerGO.GetComponent<Dissolve>().StartDissolving(); //attacker life is 0
                 //Destroy(attacker);
-                    
+
             } 
             else
             {
@@ -593,6 +594,7 @@ public class PlayerManager : NetworkBehaviour
             }
             if (targetGO.GetComponent<CardDisplay>().GetHealth() <= 0)
             {
+                targetGO.GetComponent<CanvasGroup>().blocksRaycasts = false;
                 targetGO.GetComponent<Image>().material = null;
                 targetGO.GetComponent<Dissolve>().StartDissolving(); //target life is 0
                 //Destroy(target);
