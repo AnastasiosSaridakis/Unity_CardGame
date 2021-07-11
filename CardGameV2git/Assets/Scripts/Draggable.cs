@@ -47,10 +47,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isDraggable) return;
-
+        if (eventData.button == PointerEventData.InputButton.Right ||eventData.button == PointerEventData.InputButton.Middle )
+            return;
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
         PlayerManager = networkIdentity.GetComponent<PlayerManager>();
-
+        
         placeholder = Instantiate(PlayerManager.cardPrefab);
         placeholder.GetComponent<CardDisplay>().card = this.gameObject.GetComponent<CardDisplay>().card;//This needs to change cause if i move a buffed card it wont show properly
         //Debug.Log("THE ARTWORK IS: " + placeholder.GetComponent<CardDisplay>().card.artworkImage);
@@ -78,6 +79,8 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         if (!isDraggable) return;
         //Debug.Log("OnDrag, isDraggable is " + isDraggable);
         // Debug.Log("OnDrag");
+        if (eventData.button == PointerEventData.InputButton.Right ||eventData.button == PointerEventData.InputButton.Middle )
+            return;
         this.transform.position = eventData.position;
 
         if (!PlayerManager.isMyTurn)
@@ -114,6 +117,9 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!isDraggable) return;
+        if (eventData.button == PointerEventData.InputButton.Right ||eventData.button == PointerEventData.InputButton.Middle )
+            return;
+        Debug.Log("END DRAG HERE");
         //isDragging = false;
         //PlayerManager.CmdSpawnPreview(gameObject.GetComponent<CardDisplay>().card.id, placeholderParent);
         if (placeholder.transform.parent == tabletop.transform && GameManager.Instance.currentMana >= gameObject.GetComponent<CardDisplay>().card.cost)

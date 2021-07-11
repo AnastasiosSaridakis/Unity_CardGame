@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour
      public Button previousPageBtn, nextPageBtn;
      public TextMeshProUGUI pageNumberTxt,cardsInDeckTxt,exitDialogTxt;
      public TMP_InputField deckTitle;
+     public GameObject zoomCard;
 
     
     

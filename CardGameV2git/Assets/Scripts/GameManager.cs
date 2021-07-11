@@ -406,6 +406,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"HERE CHANGE TURN AUTOMATICALLY!!!");
         if (playerManager.isMyTurn)
         {
+            endTurnButton.interactable = false;
             playerManager.CmdTimeFlagged(true,playerManager);
             ChangeTurn();
         }
@@ -415,6 +416,7 @@ public class GameManager : MonoBehaviour
     {
         NetworkIdentity networkIdentity = NetworkClient.connection.identity;
         playerManager = networkIdentity.GetComponent<PlayerManager>();
+        
         
         playerManager.CmdTimeFlagged(false,playerManager);
         Debug.Log($"Button: Setting {playerManager.netIdentity} isTimeFlagged to: {playerManager.isTimeFlagged}");

@@ -5,7 +5,12 @@
 [Bb]uilds/
 CardGameV2git_clone_0 
 CardGameV2git_clone_1
-CardGameV2git/Assets/Assets/Feel
+CardGameV2git/Assets/Feel/FeelDemos
+CardGameV2git/Assets/Feel/FeelDemos.meta
+CardGameV2git/Assets/Feel/FeelDemosHDRP
+CardGameV2git/Assets/Feel/FeelDemosHDRP.meta
+CardGameV2git/Assets/Feel/FeelDemosURP
+CardGameV2git/Assets/Feel/FeelDemosURP.meta
 CardGameV2git/Assets/Samples
 Assets/AssetStoreTools*
 

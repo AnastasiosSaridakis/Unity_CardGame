@@ -9,7 +9,6 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
     public int cardId,cost;
     public string cName;
     public TextMeshProUGUI cardName, cardMana;
-    GameObject zoomCard;
     Card originalCard;
     private Canvas canvas;
 
@@ -38,8 +37,8 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
         if (DeckManager.Instance.isDragging)
             return;
 
-        if (zoomCard != null)
-            Destroy(zoomCard);
+        if (UIManager.Instance.zoomCard != null)
+            Destroy(UIManager.Instance.zoomCard);
 
        
         /*Vector3 cardPos = transform.position + Vector3.right * GetComponent<RectTransform>().rect.width;
@@ -50,14 +49,14 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
         Vector3 pos2 = WorldToScreenSpace(transform.position, Camera.main, transform.parent.parent.GetComponent<RectTransform>());
         pos2 = pos2 + Vector3.right * GetComponent<RectTransform>().rect.width;
         
-        zoomCard = Instantiate(UIManager.Instance.defaultCard, pos2, Quaternion.identity);
-        zoomCard.transform.SetParent(transform.parent.parent.parent,false);
-        zoomCard.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        UIManager.Instance.zoomCard = Instantiate(UIManager.Instance.defaultCard, pos2, Quaternion.identity);
+        UIManager.Instance.zoomCard.transform.SetParent(transform.parent.parent.parent,false);
+        UIManager.Instance.zoomCard.GetComponent<CanvasGroup>().blocksRaycasts = false;
         foreach (Card card in CardDatabase.Instance.cardList)
         {
             if (card.id == cardId)
             {
-                zoomCard.GetComponent<CardDisplay>().CopyStats(card);
+                UIManager.Instance.zoomCard.GetComponent<CardDisplay>().CopyStats(card);
             }
         }
     }
@@ -67,14 +66,16 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
         if (DeckManager.Instance.isDragging)
             return;
 
-        Destroy(zoomCard);
+        Destroy(UIManager.Instance.zoomCard);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (zoomCard != null)
-            Destroy(zoomCard);
-
+        if (eventData.button == PointerEventData.InputButton.Right ||eventData.button == PointerEventData.InputButton.Middle )
+            return;
+        if (UIManager.Instance.zoomCard != null)
+            Destroy(UIManager.Instance.zoomCard);
+        
         transform.SetParent(UIManager.Instance.currentDeckPanel.transform.parent.parent);
         gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
         DeckManager.Instance.isDragging = true;
@@ -84,6 +85,8 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (eventData.button == PointerEventData.InputButton.Right ||eventData.button == PointerEventData.InputButton.Middle )
+            return;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         transform.position = new Vector3(ray.origin.x, ray.origin.y, 1);
         
@@ -95,6 +98,8 @@ public class SimpleCard : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (eventData.button == PointerEventData.InputButton.Right ||eventData.button == PointerEventData.InputButton.Middle )
+            return;
         PointerEventData pointer = new PointerEventData(EventSystem.current);
 
         pointer.position = eventData.position;

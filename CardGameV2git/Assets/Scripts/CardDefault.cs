@@ -19,6 +19,9 @@ public class CardDefault : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (eventData.button == PointerEventData.InputButton.Right ||eventData.button == PointerEventData.InputButton.Middle )
+            return;
+        
         cloneCard = Instantiate(this.gameObject, this.gameObject.transform.parent.parent.parent);
     }
 
@@ -26,7 +29,6 @@ public class CardDefault : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         if (cloneCard == null)
             return;
-        
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         cloneCard.transform.position = new Vector3(ray.origin.x, ray.origin.y, 1);
         
@@ -39,13 +41,12 @@ public class CardDefault : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         if (cloneCard == null)
             return;
-
         PointerEventData pointer = new PointerEventData(EventSystem.current);
         
         pointer.position = eventData.position;
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointer, results);
-
+        cloneCard.GetComponent<CanvasGroup>().blocksRaycasts = false;
         foreach (RaycastResult result in results)
         {
             if(result.gameObject.tag == "CurrentDeckPanel")//spawn a card with the same id as a simpleCard

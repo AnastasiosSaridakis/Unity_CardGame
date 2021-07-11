@@ -29,6 +29,7 @@ public class UIGame : MonoBehaviour
 
     [SerializeField] public GameObject pauseMenu;
     [SerializeField] private bool isPaused;
+    public GameObject zoomCard;
 
     [Header("EndGame Phase")] 
     public GameObject endGamePanel;
