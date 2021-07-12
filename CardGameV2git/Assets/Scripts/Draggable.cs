@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Mirror;
+using MoreMountains.Tools;
+using UnityEditor;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -21,6 +24,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     private GameObject tabletop;
     private GameObject hand;
     private int newSiblingIndex;
+    
+    private LineRenderer line;
+    private MMBezierLineRenderer bezier;
+    private GameObject handle;
+    [SerializeField] private Material lineMaterial;
 
 
     public PlayerManager PlayerManager;
@@ -35,6 +43,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
         enemyHand.transform.GetComponent<Image>().raycastTarget = false;
         enemytabletop.transform.GetComponent<Image>().raycastTarget = false;
+        
+        line = gameObject.GetComponent<LineRenderer>(); 
+        bezier = gameObject.GetComponent<MMBezierLineRenderer>();
+        bezier.AdjustmentHandles = new Transform[4];
+        handle = new GameObject();
 
         /*if (!hasAuthority)  //FIX. Can i drag opponents cards?
         {
@@ -42,6 +55,15 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
             //Debug.Log("Den exw authority ara draggable: " + isDraggable);
         }*/
+    }
+
+    private void Update()
+    {
+        if(GameManager.Instance.minionSelected == gameObject && GameManager.Instance.currentBattlePhase == GameManager.BattlePhase.Selected)
+        {
+            bezier.AdjustmentHandles[2].position = Input.mousePosition + new Vector3(-100f, -100f, -100);;
+            bezier.AdjustmentHandles[3].position = Input.mousePosition;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -174,12 +196,16 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         {                                                                            //minion                   
             if (gameObject.transform.parent == tabletop.transform && PlayerManager.isMyTurn && canAttack)//and if that click is on my turn and
             {                                                                               //its on my minion then select it                
-                //Color c = gameObject.GetComponent<Image>().color;
-                ////c.a = 1;
-                //c = new Color(255,150,0);
-                //gameObject.GetComponent<Image>().color = c;
-
                 gameObject.GetComponent<Image>().material = GameManager.Instance.blueFlame;
+
+                line.enabled = true;
+                line.material = lineMaterial; 
+                for (int i = 0; i < 4; i++)
+                {
+                    bezier.AdjustmentHandles[i] = Instantiate(handle,transform.parent.parent).transform;
+                }
+                bezier.AdjustmentHandles[0].position = gameObject.transform.position;
+                bezier.AdjustmentHandles[1].position = bezier.AdjustmentHandles[0].position + new Vector3(100f, 100f, -100);
 
                 GameManager.Instance.minionSelected = gameObject;
                 GameManager.Instance.currentBattlePhase = GameManager.BattlePhase.Selected;

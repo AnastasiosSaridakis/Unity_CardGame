@@ -404,12 +404,12 @@ public class GameManager : MonoBehaviour
         }
         
         Debug.Log($"HERE CHANGE TURN AUTOMATICALLY!!!");
-        if (playerManager.isMyTurn)
+        /*if (playerManager.isMyTurn)
         {
             endTurnButton.interactable = false;
             playerManager.CmdTimeFlagged(true,playerManager);
             ChangeTurn();
-        }
+        }*/
     }
 
     public void ManualButtonPress()
